@@ -7,7 +7,7 @@ export const zhSidebar = sidebar({
       text: "教程",
       icon: "creative",
       prefix: "tutorials/",
-      link: "tutorials/",
+      link: "category/教程/",
       children: "structure",
     },
     {

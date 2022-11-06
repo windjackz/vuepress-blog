@@ -16,7 +16,7 @@ projects:
   - icon: book
     name: 教程
     desc: 我编写的教程与学习心得
-    link: /tutorials
+    link: /category/教程/
   - icon: friend
     name: 关于我
     desc: 我的介绍与联系方式

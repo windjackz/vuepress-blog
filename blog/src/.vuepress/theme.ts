@@ -3,11 +3,11 @@ import { enNavbar, zhNavbar } from "./navbar/index.js";
 import { enSidebar, zhSidebar } from "./sidebar/index.js";
 
 export default hopeTheme({
-  hostname: "https://www.fengxiaolou.com",
+  hostname: "http://www.fengxiaolou.site",
 
   author: {
     name: "风小楼WindJack",
-    url: "https://www.fengxiaolou.com",
+    url: "http://www.fengxiaolou.site",
   },
 
   iconAssets: "iconfont",
