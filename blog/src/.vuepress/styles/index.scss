@@ -1,0 +1,13 @@
+// place your custom styles here
+#app {
+    .blog-hero {
+        color: white;
+        font-weight: bold;
+        .mask {
+            filter: brightness(80%);
+        }
+    }
+    .blog-info-list .blog-type-button {
+        color: #d7ce9f;
+    }
+}
