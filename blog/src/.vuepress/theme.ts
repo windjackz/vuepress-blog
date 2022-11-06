@@ -20,6 +20,8 @@ export default hopeTheme({
 
   pageInfo: ["Author", "Original", "Date", "Category", "Tag", "ReadingTime"],
 
+  contributors: false,
+
   blog: {
     roundAvatar: true,
     medias: {
