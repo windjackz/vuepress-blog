@@ -1,6 +1,12 @@
 import { defineUserConfig } from "vuepress";
 import { searchPlugin } from "@vuepress/plugin-search";
+import { getDirname, path } from "@vuepress/utils";
 import theme from "./theme.js";
+
+const __dirname = getDirname(import.meta.url);
+
+
+
 
 export default defineUserConfig({
   base: "/",
@@ -26,4 +32,10 @@ export default defineUserConfig({
       },
     }),
   ],
+
+  alias: {
+    "@WaterEffectFinal": path.resolve(__dirname, "components/waterEffects/final.vue"),
+    "@WaterEffectWave": path.resolve(__dirname, "components/waterEffects/wave.vue"),
+    "@WaterEffectCaustic": path.resolve(__dirname, "components/waterEffects/caustic.vue"),
+  },
 });
