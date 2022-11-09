@@ -19,8 +19,9 @@ import WaterEffectCaustic from "@WaterEffectCaustic";
 ## 最终效果
 
 先看最终效果：
-
-<WaterEffectFinal />
+<ClientOnly>
+  <WaterEffectFinal />
+</ClientOnly>
 
 ## 背景
 产品希望给首页的水面背景添加特效，使水面更加生动。
@@ -276,7 +277,9 @@ gl_FragColor =  vUvs.y < 0.223 ? texture2D(uSampler,vUvs) : texture2D(uSampler, 
 
 至此，应该能看见以下效果：
 
-<WaterEffectWave />
+<ClientOnly>
+  <WaterEffectWave />
+</ClientOnly>
 
 ### 3、 实现水面焦散效果
 焦散是一种由曲面引起的光反射现象，这会让我们的水面看起来“波光粼粼”。
@@ -407,7 +410,9 @@ vec3 caustic()
 ```
 效果如下：
 
-<WaterEffectCaustic />
+<ClientOnly>
+  <WaterEffectCaustic />
+</ClientOnly> 
 
 ### 4、 一点优化
 现在效果已经相当不错了。但是水面和非水面的边界可能会有一些明显，有一点突兀的感觉。这里我们通过mix函数及smoothstep进行边界处的平滑处理。
