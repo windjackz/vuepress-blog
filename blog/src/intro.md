@@ -20,7 +20,9 @@ icon: info
 
 ## 游戏
 
-[![alt Nishan Shaman Icon](/assets/icon/NishanIcon.jpeg "Nishan Shaman" =100x)](/games)
+
+<figure><a href="/games"><img src="/assets/icon/NishanIcon.jpeg" alt="alt Nishan Shaman Icon" title="Nishan Shaman" width="100" loading="lazy"><figcaption style="display: block;">Nishan Shaman</figcaption></a></figure>
+
 
 
 ## 奖项
