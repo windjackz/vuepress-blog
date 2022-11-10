@@ -74,7 +74,7 @@ export default hopeTheme({
       // sidebar
       sidebar: zhSidebar,
 
-      footer: "默认页脚",
+      footer: "蝼蚁也要与日月争辉",
 
       displayFooter: true,
 

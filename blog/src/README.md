@@ -22,5 +22,5 @@ projects:
     desc: 我的介绍与联系方式
     link: /intro
 
-footer: 备案号
+footer: 
 
