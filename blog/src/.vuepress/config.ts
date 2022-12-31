@@ -1,6 +1,7 @@
 import { defineUserConfig } from "vuepress";
 import { searchPlugin } from "@vuepress/plugin-search";
 import { getDirname, path } from "@vuepress/utils";
+import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics'
 import theme from "./theme.js";
 
 
@@ -31,6 +32,10 @@ export default defineUserConfig({
           placeholder: "搜索",
         },
       },
+    }),
+    googleAnalyticsPlugin({
+      // 配置项
+      id: 'G-EQL7KBR36G',
     }),
   ],
 
