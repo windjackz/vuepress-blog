@@ -312,10 +312,6 @@ RUN pip3 install tflite_runtime-2.11.0-cp38-cp38-linux_aarch64.whl
 
 与上文的其它方案对比，此方案有了长足的提升，冷启动时长也不再那么令人难以接受。配合定时调度的方式定时触发云函数，以免我们满足日常需求的推理应用进入冷启动，这种方案已经可以在生产环境上应用了。
 
-[1]: <a name="r1">[Serving machine learning models with AWS Lambda](https://ianwhitestone.work/serverless-ml-deployments/ )</a>
-  
-[2]: <a name="r1">[TensorFlow Lite 转换器]( https://tensorflow.google.cn/lite/convert?hl=zh-cn )</a>
-
 ## 总结
 
 各方案对比:
@@ -326,3 +322,9 @@ RUN pip3 install tflite_runtime-2.11.0-cp38-cp38-linux_aarch64.whl
 |X86_64tflite|628.57MB|30.37s|2.85s|391MB|
 |X86_64tflite动态范围量化|450.54MB|超时|57.3s|363MB|
 |ARM64tflite动态范围量化|405.32MB|4.42s|1.70s|469MB|
+
+## 引用
+
+[1]: <a name="r1">[Serving machine learning models with AWS Lambda](https://ianwhitestone.work/serverless-ml-deployments/ )</a>
+  
+[2]: <a name="r1">[TensorFlow Lite 转换器]( https://tensorflow.google.cn/lite/convert?hl=zh-cn )</a>
