@@ -327,4 +327,4 @@ RUN pip3 install tflite_runtime-2.11.0-cp38-cp38-linux_aarch64.whl
 
 [1]: <a name="r1">[Serving machine learning models with AWS Lambda](https://ianwhitestone.work/serverless-ml-deployments/ )</a>
   
-[2]: <a name="r1">[TensorFlow Lite 转换器]( https://tensorflow.google.cn/lite/convert?hl=zh-cn )</a>
+[2]: <a name="r2">[TensorFlow Lite 转换器]( https://tensorflow.google.cn/lite/convert?hl=zh-cn )</a>
