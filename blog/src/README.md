@@ -24,7 +24,7 @@ projects:
   - icon: article
     name: 风言风语
     desc: 杂谈随想，谈天说地
-    link: /intro
+    link: /category/风言风语/
 
 footer: 
 ---
