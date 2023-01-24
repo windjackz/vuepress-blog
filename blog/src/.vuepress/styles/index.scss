@@ -4,10 +4,14 @@
         color: white;
         font-weight: bold;
         .mask {
-            filter: brightness(80%);
+            filter: brightness(var(--mask-brightness));
         }
     }
     .blog-info-list .blog-type-button {
         color: #d7ce9f;
+    }
+
+    .blog-page-wrapper {
+        margin-top: 0.6rem;
     }
 }

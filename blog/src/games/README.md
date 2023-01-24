@@ -26,7 +26,7 @@ star: true
 >独特的中国剪纸风格美术，神秘的原创少数民族萨满音乐，文化底蕴丰富的图鉴收集系统，带你领略中国北方少数民族文化的独特魅力。
 
 
-<iframe style="width: 100%; aspect-ratio: auto 16 / 9;" src="//player.bilibili.com/player.html?aid=27623087&bvid=BV1zs411P77v&cid=47667683&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+<iframe style="width: 100%; aspect-ratio: auto 16 / 10;" src="//player.bilibili.com/player.html?aid=27623087&bvid=BV1zs411P77v&cid=47667683&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
 
 

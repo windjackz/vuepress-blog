@@ -43,5 +43,7 @@ export default defineUserConfig({
     "@WaterEffectFinal": path.resolve(__dirname, "components/waterEffects/final.vue"),
     "@WaterEffectWave": path.resolve(__dirname, "components/waterEffects/wave.vue"),
     "@WaterEffectCaustic": path.resolve(__dirname, "components/waterEffects/caustic.vue"),
+    "@StampDecodeImage": path.resolve(__dirname, "components/ask2see/decodeImg.vue"),
+    "@StampEncodeImage": path.resolve(__dirname, "components/ask2see/encodeImg.vue"),
   },
 });
