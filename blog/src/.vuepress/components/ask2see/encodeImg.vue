@@ -51,7 +51,6 @@
 import { ref } from 'vue';
 import Compressor from 'compressorjs';
 import { showNotify } from 'vant';
-import { blobToBase64 } from 'base64-blob';
 
 const apiDomain = 'https://19hevguuz2.execute-api.ap-northeast-1.amazonaws.com/Prod';
 const API = {
@@ -73,6 +72,14 @@ const afterDelete = () => {
 
 const afterRead = async (file) => {
     fileRef = file;
+}
+
+const blobToBase64 = async (blob) => {
+  return new Promise((resolve, _) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.readAsDataURL(blob);
+  });
 }
 
 // 请求解密图片
@@ -103,7 +110,7 @@ const onSubmit = () => {
     new Compressor(fileList.value[0].file, {
         quality: 0.6,
         success: async (result) => {
-            const base64 = await blobToBase64(result);
+            const base64 = await blobToBase64(result) as string;
             try {
                 fileRef.status = 'uploading';
                 fileRef.message = '加密中...';
