@@ -20,7 +20,6 @@ import StampEncodeImage from "@StampEncodeImage"
 
 前段时间看了一部中国台湾的穿越时空轮回系偶像剧《想见你》。
 
-<iframe style="width: 100%; aspect-ratio: auto 16 / 10;" src="//player.bilibili.com/player.html?aid=27623087&bvid=BV1a64y1c76e&cid=47667683&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
 剧中男主给女主留下了一枚戒指，上面刻印着"Only if you asked to see me, our meeting would be meaningful to me"（唯有你也想见我的时候，我们的见面才有意义）。也正是这份很想见你的执念，造就了剧中男女主角穿越时空的奇迹。
 
