@@ -19,7 +19,7 @@ star: true
 
 用公式表示卷积这个操作，在离散域上，有：
 
-![formula1.png](/assets/images/gaussianblur/formula1.png)
+![](/assets/images/gaussianblur/formula1.png)
 
 其中，（x,y）表示二维图像像素点的坐标，g(x,y)标识该像素被处理完后的像素值。r表示卷积核半径。s(x,y)表示该像素点原来的像素值。f(u,v)表示卷积核的在u,v上的权重值。f函数通常也称作滤波函数。
 
@@ -30,7 +30,7 @@ star: true
 
 为方便理解，先看看均值滤波函数：
 
-![formula2.png](/assets/images/gaussianblur/formula2.png)
+![](/assets/images/gaussianblur/formula2.png)
 
 其中，width以及height分别为卷积核的宽与高。从公式可知，图像中某点的像素值就是该像素卷积核范围内的像素的均值。这就很好理解图像为什么模糊了。并且卷积核的范围越大，图像就越模糊。
 
@@ -40,11 +40,11 @@ star: true
 
 高斯模糊，便是使用高斯分布作为滤波函数。我们先回顾一下高斯分布，下式为一维高斯分布的概率密度函数：
 
-![formula3.png](/assets/images/gaussianblur/formula3.png)
+![](/assets/images/gaussianblur/formula3.png)
 
 下图[[3]](#r3)为一维高斯分布函数图像：
 
-![formula4.png](/assets/images/gaussianblur/formula4.png)
+![](/assets/images/gaussianblur/formula4.png)
 
 从图中可知，x距离upsilon越近，则f的值越大，越接近峰值。sigma的值越大，则峰值的值越小，函数图像越接近平稳。
 
@@ -52,7 +52,7 @@ star: true
 
 由于图像是二维的，因此需要二维的高斯分布，其对应的概率密度函数如下：
 
-![formula5.png](/assets/images/gaussianblur/formula5.png)
+![](/assets/images/gaussianblur/formula5.png)
 
 这里，dx,dy分别对应当前横竖坐标到卷积核中心的距离。
 
@@ -65,11 +65,11 @@ star: true
 第一个优化点很好理解，这里主要补充，为什么二维高斯卷积操作，可以拆分成两个一维高斯的卷积操作。
 设f(x,y),f(x),f(y)符合标准正太分布，即upsilon为0,sigma为1.有
 
-![formula6.png](/assets/images/gaussianblur/formula6.png)
+![](/assets/images/gaussianblur/formula6.png)
 
 则：
 
-![formula7.png](/assets/images/gaussianblur/formula7.png)
+![](/assets/images/gaussianblur/formula7.png)
 
 可见，先在水平方向上做一维卷积，再在垂直方向上做一维卷积，二维高斯卷积操作得以拆分。（注，上述公式忽略了对权重的归一化，实际上，应该最生成的权重进行归一化，使他们的和为1，否则亮度会降低）
 

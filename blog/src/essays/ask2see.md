@@ -20,6 +20,9 @@ import StampEncodeImage from "@StampEncodeImage"
 
 前段时间看了一部中国台湾的穿越时空轮回系偶像剧《想见你》。
 
+<iframe style="width: 100%; aspect-ratio: auto 16 / 10;" src="//player.bilibili.com/player.html?aid=27623087&bvid=BV1a64y1c76e&cid=47667683&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+
 
 剧中男主给女主留下了一枚戒指，上面刻印着"Only if you asked to see me, our meeting would be meaningful to me"（唯有你也想见我的时候，我们的见面才有意义）。也正是这份很想见你的执念，造就了剧中男女主角穿越时空的奇迹。
 
@@ -58,7 +61,7 @@ Ta 是你想传达话语的对象 <——> Ta 解开了图片的信息。
 当你输入“牧濑红莉栖”并点击提交后，将会看到图片中隐藏的内容。
 
 ::: center
-![上传图片解密](/assets/images/ask2see/decode-stage-2.png )
+![解密内容](/assets/images/ask2see/decode-stage-2.png )
 ::: 
 
 这里有一个小彩蛋。当问题是“你的名字”并且回答正确时，站点会换成同名动画电影《你的名字》的主题皮肤。
@@ -84,7 +87,7 @@ Ta 是你想传达话语的对象 <——> Ta 解开了图片的信息。
 当然，要发现图片的奥秘，并掌握解密方式实在是太难了。因此也可以开启一个小小的二维码。这时候只要在微信中长按扫码就会转跳到这个页面，自然就会解密啦。
 
 ::: center
-![上传图片解密](/assets/images/ask2see/qrcode.png )
+![想见你-二维码](/assets/images/ask2see/qrcode.png )
 ::: 
 
 ## 最后

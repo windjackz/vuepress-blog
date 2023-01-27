@@ -9,7 +9,7 @@ icon: info
 目前主要从事游戏化的人工智能教育平台探索及开发工作。
 
 ::: center
-![alt me](/assets/images/aboutme/me.jpeg  =80%x)
+![](/assets/images/aboutme/me.jpeg  =80%x)
 :::
 
 

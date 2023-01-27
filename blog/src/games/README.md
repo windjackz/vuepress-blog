@@ -15,7 +15,7 @@ star: true
 
 游戏平台：IOS、Windows
 
-![alt Nishan Shaman Icon](/assets/icon/NishanIcon.jpeg =100x)
+![Nishan Shaman](/assets/icon/NishanIcon.jpeg =100x)
 
 >来自六个毕业生的完全免费诚意之作。
 

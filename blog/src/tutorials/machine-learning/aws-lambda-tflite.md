@@ -116,7 +116,7 @@ Error: Building image for InferenceFunction requires Docker. is Docker running?
 ```
 由于tensorflow2.x 体积比较大，构建需要较长的时间。构建完成后，在docker Desktop中可以看到：
 
-![sam-template-init-succeed](/assets/images/aws-lambda-tflite/docker-build.png)
+![](/assets/images/aws-lambda-tflite/docker-build.png)
 
 镜像已经被构建出来了，大小约为2.58GB，当中模型的大小只占1.7MB。
 

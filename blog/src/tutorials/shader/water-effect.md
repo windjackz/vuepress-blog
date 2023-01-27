@@ -28,7 +28,7 @@ import WaterEffectCaustic from "@WaterEffectCaustic";
 
 背景图类似下面这张：
 
-![background.png](/assets/images/watereffect/01.png)
+![](/assets/images/watereffect/01.png)
 
 一般来说，前端提到特效可能会想到使用视频、序列帧动画，Lottie等方案。
 
@@ -119,7 +119,7 @@ canvas.appendChild(app.view);
 
 ```
 
-![background.png](/assets/images/watereffect/02.png)
+![](/assets/images/watereffect/02.png)
 
 定义顶点着色器(Vertex Shader)以及片元着色器(Fragment Shader)。
 ```c
@@ -178,9 +178,9 @@ app.stage.addChild(container);
 
 几何阶段一个重要的工作，就是对网格中的顶点数据做一系列的坐标变换，计算这些顶点在屏幕最终绘制的位置。
 
-![background.png](/assets/images/watereffect/03.png)
+![](/assets/images/watereffect/03.png)
 
-![background.png](/assets/images/watereffect/04.png)
+![](/assets/images/watereffect/04.png)
 
 顶点着色器的最基本的任务，就是把顶点坐标从网格数据的模型空间变换到裁剪空间。上面的顶点着色器代码显示了如何实现这一过程：
 ```c
@@ -202,7 +202,7 @@ gl_FragColor = texture2D(uSampler, vUvs);
 
 噪声图[^7]如下：
 
-![background.png](/assets/images/watereffect/05.png)
+![](/assets/images/watereffect/05.png)
 
 修改uniform变量，添加噪声图的纹理。
 
@@ -233,7 +233,7 @@ uniforms.uWave.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT; // 设置超过纹
 
 这时会看到背景图片多了一些波纹。
 
-![background.png](/assets/images/watereffect/06.png)
+![](/assets/images/watereffect/06.png)
 
 接着我们给波纹加上位移。首先我们添加一个回调函数，每帧都会使得time变量增大。我们把time变量传到着色器里，用于计算位于。
 ```typescript
@@ -284,12 +284,12 @@ gl_FragColor =  vUvs.y < 0.223 ? texture2D(uSampler,vUvs) : texture2D(uSampler, 
 ### 3、 实现水面焦散效果
 焦散是一种由曲面引起的光反射现象，这会让我们的水面看起来“波光粼粼”。
 
-![background.png](/assets/images/watereffect/07.jpeg)
+![](/assets/images/watereffect/07.jpeg)
 
 
 要真实地复刻这种效果是非常困难的，我们还是通过纹理贴图的方式来模拟。只要看起来效果是好的，那它就是对的。
 
-![background.png](/assets/images/watereffect/08.png)
+![](/assets/images/watereffect/08.png)
 
 [^8]为此做了试验。要想达到好的效果，需要以下三个步骤：
 - 以不同的速度，尺寸重复采样纹理两次。
@@ -353,7 +353,7 @@ const uniforms = {
 
 此时会看到如下效果：
 
-![background.png](/assets/images/watereffect/09.png)
+![](/assets/images/watereffect/09.png)
 
 焦散的纹理已经添加到图片上了，但是并不明显，我们再加一些动画：
 ```c
