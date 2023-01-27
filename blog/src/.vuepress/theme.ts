@@ -91,7 +91,7 @@ export default hopeTheme({
 
   plugins: {
     blog: {
-      autoExcerpt: true,
+      excerpt: true,
     },
 
     // If you don’t need comment feature, you can remove following option
@@ -131,9 +131,9 @@ export default hopeTheme({
       echarts: true,
       flowchart: true,
       gfm: true,
-      imageLazyload: true,
-      imageTitle: true,
-      imageSize: true,
+      imgLazyload: true,
+      figure: true,
+      imgSize: true,
       include: true,
       katex: true,
       mark: true,
