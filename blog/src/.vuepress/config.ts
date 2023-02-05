@@ -46,5 +46,6 @@ export default defineUserConfig({
     "@StampDecodeImage": path.resolve(__dirname, "components/ask2see/decodeImg.vue"),
     "@StampEncodeImage": path.resolve(__dirname, "components/ask2see/encodeImg.vue"),
     "@ThemeYourName": path.resolve(__dirname, "components/theme/yourname.vue"),
+    "@Kurisu": path.resolve(__dirname, "components/kurisu/index.vue"),
   },
 });
