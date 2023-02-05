@@ -16,9 +16,11 @@ import { defineAsyncComponent } from 'vue'
 const Kurisu = defineAsyncComponent(() => import('@Kurisu'))
 </script>
 
+::: center
 <ClientOnly>
 <Kurisu />
 </ClientOnly>
+:::
 
 ## 修改日志
 
