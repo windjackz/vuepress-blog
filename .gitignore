@@ -107,3 +107,5 @@ node_modules/
 blog/src/.vuepress/.cache/
 blog/src/.vuepress/.temp/
 blog/src/.vuepress/dist/
+blog/src/.vuepress/public/assets/live2d/haru/
+blog/src/.vuepress/public/assets/live2d/shizuku/
