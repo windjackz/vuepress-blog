@@ -1,5 +1,7 @@
 <template>
-    <canvas id="canvas"></canvas>
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -17,7 +19,7 @@ onMounted(async () => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     if (canvas) {
         app = new Application({
-            resizeTo: window,
+            resizeTo: canvas,
             view: canvas,
             antialias: true, // default:false 开启抗锯齿
             transparent: true, // 是否开启透明通道
@@ -25,11 +27,12 @@ onMounted(async () => {
         });
         container = new Container();
         app.stage.addChild(container);
-        const model = await Live2DModel.from('/assets/live2d/kurisu/kurisu.model.json');
-        const modelScale = 0.2;
-        model.x = -designSize.w / 2 + 3000 * modelScale;
-        model.y = -designSize.h / 2 + 2200 * modelScale;
-        model.scale.set(1 - modelScale, 1- modelScale);
+        // const model = await Live2DModel.from('/assets/live2d/kurisu/kurisu.model.json');
+        const model = await Live2DModel.from('/assets/live2d/Hiyori/hiyori.model3.json');
+        const modelScale = 0.45;
+        model.x = 0;
+        model.y = 300;
+        model.scale.set(modelScale, modelScale);
         model.anchor.set(0.5, 0.5);
         container.addChild(model);
 
@@ -60,7 +63,18 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-#canvas {
+.canvas-container {
+    display: flex;
+    position: relative;
     width: 80%;
+    height: 0;
+    padding-bottom: 100%;
+    margin: 0 auto;
+}
+#canvas {
+    position: absolute;
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
 }
 </style>
