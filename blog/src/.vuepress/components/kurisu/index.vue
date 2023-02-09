@@ -11,7 +11,7 @@
         position="left"
         :style="{ width: '40%', height: '100%' }"
         :overlay-style="{ zIndex: 'var(--van-overlay-z-index);', background: 'transparent' }"
-        :closeable="true"
+        :closeable="false"
     >
     <van-collapse v-model="activeNames">
         <van-collapse-item title="显示" name="display">
@@ -113,8 +113,7 @@ const initModel = (model: ModelEntity) => {
             pixiModel.x = 0;
             pixiModel.y = 300;
             pixiModel.anchor.set(0.5, 0.5);
-            const modelScale = 0.45;
-            pixiModel.scale.set(modelScale, modelScale);
+            modelScale.value = 0.45;
         }
         loadingProgress.value = '';
     });
@@ -124,11 +123,21 @@ const initModel = (model: ModelEntity) => {
 }
 
 watch(showModelArea, () => {
-    console.log(showModelArea.value);
     if (model && model.pixiModel) {
         model.pixiModel.backgroundVisible = showModelArea.value;
     }
-    
+});
+
+watch(showHitArea, () => {
+    if (model && model.pixiModel) {
+        model.pixiModel.hitAreaFrames.visible = showHitArea.value;
+    }
+});
+
+watch(modelScale, () => {
+    if (model && model.pixiModel) {
+        model.scaleX = modelScale.value;
+    }
 });
 
 onMounted(async () => {
