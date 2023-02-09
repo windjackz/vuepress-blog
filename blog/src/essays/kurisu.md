@@ -13,6 +13,8 @@ star: true
 ---
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
+import 'vant/lib/index.css';
+import '@vant/touch-emulator';
 const Kurisu = defineAsyncComponent(() => import('@Kurisu'))
 </script>
 

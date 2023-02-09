@@ -1,13 +1,17 @@
 import { defineClientConfig } from '@vuepress/client'
-import { Uploader, Field, Form, Button, Switch } from 'vant';
-import { onMounted } from "vue";
+import { Uploader, Field, Form, Button, Switch, Popup, Icon } from 'vant';
+import { Collapse, CollapseItem, Slider } from 'vant';
 export default defineClientConfig({
     enhance({ app, router, siteData }) {
-        console.log('exec enhance');
         app.use(Uploader)
         .use(Field)
         .use(Form)
         .use(Button)
+        .use(Popup)
+        .use(Icon)
+        .use(Collapse)
+        .use(CollapseItem)
+        .use(Slider)
         .use(Switch);
     },
     setup() {
