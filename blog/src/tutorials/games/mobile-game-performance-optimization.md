@@ -1,5 +1,5 @@
 ---
-title: 1分钟了解手游性能优化(1)——overview
+title: 1分钟了解手游性能优化(1)——OVERVIEW
 icon: article
 description: 
 category:
