@@ -16,7 +16,7 @@ import App from './App';
 import { Live2DModel } from '../../framework/live2d/Live2DModel';
 import Live2dSettingButton from './Live2dSettingButton.vue';
 import { ModelEntity } from '../../framework/live2d/ModelEntity';
-import { Kurisu } from './kurisuModel';
+import { Kurisu } from './KurisuModel';
 import Live2dDebuggerEditor from './Live2dDebuggerEditor.vue';
 
 
