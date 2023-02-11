@@ -26,6 +26,12 @@ const Kurisu = defineAsyncComponent(() => import('@Kurisu'))
 
 ## 修改日志
 
+### 0.1.0 
+
+### Features
+
+- **components:** add live2d debugger editor
+
 ### 0.0.1
 
 ### Features

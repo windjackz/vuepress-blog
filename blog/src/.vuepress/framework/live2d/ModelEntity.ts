@@ -6,6 +6,7 @@ import { Live2DFactory } from 'pixi-live2d-display';
 
 export class ModelEntity extends EventEmitter {
 
+    isModelLoaded = false;
     url = '';
     error = '';
     aspectRatio = 1;
@@ -48,10 +49,11 @@ export class ModelEntity extends EventEmitter {
             await Live2DFactory.setupLive2DModel(pixiModel, source);
 
             this.modelLoaded(pixiModel);
+            this.isModelLoaded = true;
             this.emit('modelLoaded', pixiModel);
         } catch (e) {
             console.warn(e);
-
+            this.emit('modelLoadedError', e);
             this.error = e instanceof Error ? e.message : e + '';
         }
     }

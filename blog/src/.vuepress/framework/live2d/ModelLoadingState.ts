@@ -1,7 +1,7 @@
 import { Live2DFactory } from "pixi-live2d-display";
 import { Live2DModel } from './Live2DModel';
 
-const enum StageState {
+export const enum StageState {
     NOT_AVAILABLE, PENDING, COMPLETED, FAILED
 }
 
