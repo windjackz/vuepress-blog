@@ -13,6 +13,8 @@ star: true
 ---
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
+import 'vant/lib/index.css';
+import '@vant/touch-emulator';
 const Kurisu = defineAsyncComponent(() => import('@Kurisu'))
 </script>
 
@@ -23,6 +25,12 @@ const Kurisu = defineAsyncComponent(() => import('@Kurisu'))
 :::
 
 ## 修改日志
+
+### 0.1.0 
+
+### Features
+
+- **components:** add live2d debugger editor
 
 ### 0.0.1
 

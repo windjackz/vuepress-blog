@@ -1,65 +1,68 @@
 <template>
     <div class="canvas-container">
         <canvas id="canvas"></canvas>
+        <div v-if="uiState.loadingProgress" class="loading-status" :class="{ 'error-tips' : uiState.loadingProgress.indexOf('error') >= 0 }">
+            {{ uiState.loadingProgress }}
+        </div>
     </div>
+    <Live2dDebuggerEditor v-model:show-drawer="uiState.showDrawer" :model="model" />
+    <Live2dSettingButton @click="uiState.showDrawer = !uiState.showDrawer" />
+
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { Application, Ticker, Container, Point } from 'pixi.js';
-import { Live2DModel } from 'pixi-live2d-display';
+import { onMounted, ref, Ref, reactive } from 'vue';
+import App from './App';
+import { Live2DModel } from '../../framework/live2d/Live2DModel';
+import Live2dSettingButton from './Live2dSettingButton.vue';
+import { ModelEntity } from '../../framework/live2d/ModelEntity';
+import { Kurisu } from './kurisuModel';
+import Live2dDebuggerEditor from './Live2dDebuggerEditor.vue';
 
-Live2DModel.registerTicker(Ticker);
 
-let container: Container;
-let app: Application;
+const uiState = reactive({
+    showDrawer: false,
+    loadingProgress: '',
+});
+
+const model: Ref<ModelEntity | undefined> = ref();
+
+let app: App;
+
+const initModel = () => {
+    model.value = new Kurisu();
+    watchModel(model.value);
+}
+
+const watchModel = (model: ModelEntity) => {
+    model.on('modelLoaded', (pixiModel: Live2DModel) => {
+        if (!app?.container.children.includes(pixiModel)) {
+            app?.container.addChild(pixiModel);
+            pixiModel.x = 0;
+            pixiModel.y = 300;
+            pixiModel.anchor.set(0.5, 0.5);
+            model.scaleX = 0.45;
+        }
+        uiState.loadingProgress = '';
+    });
+    model.on('loadingProgress', (progress: string) => {
+        uiState.loadingProgress = progress;
+    });
+    model.on('modelLoadedError', (e: any) => {
+        uiState.loadingProgress = e.message || ''
+    });
+}
+
+
+const initApp = () => {
+    app = new App('canvas');
+}
 
 onMounted(async () => {
-    const designSize = { w: 1920, h: 1080 };
-    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-    if (canvas) {
-        app = new Application({
-            resizeTo: canvas,
-            view: canvas,
-            antialias: true, // default:false 开启抗锯齿
-            transparent: true, // 是否开启透明通道
-            backgroundColor: 0x000000
-        });
-        container = new Container();
-        app.stage.addChild(container);
-        // const model = await Live2DModel.from('/assets/live2d/kurisu/kurisu.model.json');
-        const model = await Live2DModel.from('/assets/live2d/Hiyori/hiyori.model3.json');
-        const modelScale = 0.45;
-        model.x = 0;
-        model.y = 300;
-        model.scale.set(modelScale, modelScale);
-        model.anchor.set(0.5, 0.5);
-        container.addChild(model);
-
-        const resize = () => {
-            const wViewPort = app.screen.width;
-            const hViewPort = app.screen.height;
-            const rViewPort = wViewPort / hViewPort;
-            const rImage = designSize.w / designSize.h;
-            let scale = 1;
-            if (rImage < rViewPort) {
-                scale = wViewPort / designSize.w;
-            } else {
-                scale = hViewPort / designSize.h;
-            }
-            container.scale = new Point(scale, scale);
-            container.x = wViewPort / 2;
-            container.y = hViewPort / 2;
-            app.render();
-        };
-
-        app.renderer.on('resize', () => {
-            resize();
-        });
-
-        resize();
-    }
+    initApp();
+    initModel();
 });
+
 </script>
 
 <style lang="scss" scoped>
@@ -76,5 +79,17 @@ onMounted(async () => {
     margin: 0 auto;
     width: 100%;
     height: 100%;
+}
+
+.loading-status {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    white-space: break-spaces;
+    text-align: left;
+}
+
+.error-tips {
+    color: red;
 }
 </style>
