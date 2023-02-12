@@ -21,4 +21,13 @@
     border-width: 0;
     cursor: pointer;
 }
+
+@media (max-width: 719px) {
+    .live2d-setting {
+        width: 2.25rem;
+        height: 2.25rem;
+        padding: 0.25rem;
+        border-radius: 0.5rem;
+    }
+}
 </style>
