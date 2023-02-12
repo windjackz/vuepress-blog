@@ -1,8 +1,8 @@
-import { Live2DFactoryContext, Live2DModel as BaseLive2DModel } from 'pixi-live2d-display';
+import { Live2DFactoryContext, Live2DModel as BaseLive2DModel } from '../../libs/live2d/src';
 import { Sprite } from '@pixi/sprite';
 import { Ticker } from '@pixi/ticker';
 import { Texture, Renderer } from '@pixi/core';
-import { HitAreaFrames } from 'pixi-live2d-display/extra';
+import { HitAreaFrames } from '../../libs/live2d/src/extra';
 
 BaseLive2DModel.registerTicker(Ticker);
 

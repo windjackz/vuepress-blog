@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, computed, onBeforeUnmount, Ref, watch, reactive, defineProps } from 'vue';
-import { MotionPriority, MotionState } from 'pixi-live2d-display';
+import { MotionPriority, MotionState } from '../../libs/live2d/src';
 import { Live2DModel } from '../../framework/live2d/Live2DModel';
 import { ModelEntity } from '../../framework/live2d/ModelEntity';
 

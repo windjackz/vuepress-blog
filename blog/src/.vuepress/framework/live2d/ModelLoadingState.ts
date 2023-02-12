@@ -1,4 +1,4 @@
-import { Live2DFactory } from "pixi-live2d-display";
+import { Live2DFactory } from "../../libs/live2d/src";
 import { Live2DModel } from './Live2DModel';
 
 export const enum StageState {

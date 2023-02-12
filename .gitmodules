@@ -1,0 +1,3 @@
+[submodule "blog/src/.vuepress/libs/live2d"]
+	path = blog/src/.vuepress/libs/live2d
+	url = https://github.com/windjackz/pixi-live2d-display.git

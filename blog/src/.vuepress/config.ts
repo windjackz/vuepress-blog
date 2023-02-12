@@ -47,5 +47,12 @@ export default defineUserConfig({
     "@StampEncodeImage": path.resolve(__dirname, "components/ask2see/encodeImg.vue"),
     "@ThemeYourName": path.resolve(__dirname, "components/theme/yourname.vue"),
     "@Kurisu": path.resolve(__dirname, "components/kurisu/index.vue"),
+    "@": path.resolve(__dirname, "libs/live2d/src"),
+    "@cubism": path.resolve(__dirname, "libs/live2d/cubism/src"),
   },
+
+  define: {
+    __DEV__: process.env.NODE_ENV,
+    __VERSION__: JSON.stringify(require('../../package.json').version),
+},
 });

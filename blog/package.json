@@ -7,7 +7,8 @@
   "scripts": {
     "docs:build": "vuepress build src",
     "docs:clean-dev": "vuepress dev src --clean-cache",
-    "docs:dev": "vuepress dev src"
+    "docs:dev": "vuepress dev src",
+    "submodule": "git submodule update --init --recursive"
   },
   "devDependencies": {
     "@vuepress/client": "2.0.0-beta.60",
@@ -20,7 +21,6 @@
   "dependencies": {
     "@vant/touch-emulator": "^1.4.0",
     "compressorjs": "^1.1.1",
-    "pixi-live2d-display": "^0.4.0",
     "pixi.js": "^6.1.0",
     "vant": "^4.0.7"
   }

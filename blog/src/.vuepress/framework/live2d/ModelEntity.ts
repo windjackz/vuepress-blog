@@ -1,8 +1,7 @@
 import { Live2DModel } from './Live2DModel';
 import { EventEmitter } from '@pixi/utils';
-import { Renderer } from '@pixi/core';
 import { ModelLoadingState } from './ModelLoadingState';
-import { Live2DFactory } from 'pixi-live2d-display';
+import { Live2DFactory } from '../../libs/live2d/src';
 
 export class ModelEntity extends EventEmitter {
 
