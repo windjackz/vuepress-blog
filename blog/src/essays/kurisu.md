@@ -26,6 +26,12 @@ const Kurisu = defineAsyncComponent(() => import('@Kurisu'))
 
 ## 修改日志
 
+### 0.2.0 
+
+### Features
+
+- **animate:** live2d lipSync audio and mouth 
+
 ### 0.1.0 
 
 ### Features
