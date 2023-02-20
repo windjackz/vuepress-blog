@@ -10,161 +10,64 @@
         </tr>
     </table>
     <div id="container"></div>
-    <button @click="onSave">save</button>
+    <div class="control-area">
+        <button @click="onSave">save</button>
+        <button @click="onSerialize">serialize</button>
+    </div>
 </template>
 <script setup lang="ts">
 import { onMounted, Ref, ref } from 'vue';
-import { Cell, Graph } from "@antv/x6";
+import { Cell, Edge, Graph, Point } from "@antv/x6";
 import { DagreLayout } from '@antv/layout'
 import { Scroller } from "@antv/x6-plugin-scroller";
 import { AStarFinder } from "astar-typescript-cost";
+import { LevelDependence } from './interfaces';
+import { mockDatas } from './mockData';
 
-interface levelDependence {
-    id: string;
-    dependenceIds: string[]
-}
-const levelDependence: Ref<levelDependence[]> = ref([])
+const downloadData = (name: string, file: Blob) => {
+  const objectUrl = window.URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = objectUrl;
+  a.download = name;
+  a.click();
+  a.remove();
+};
 
-const data = {
+const strToBlob = (str: string) => new Blob([str]);
+
+const levelDependence: Ref<LevelDependence[]> = ref([])
+
+const data: {
+    nodes: {
+        id: string; 
+        size?: { width: number, height: number }
+        row?: number;
+        column?: number;
+        x?: number;
+        y?: number;
+    }[];
+    edges: {
+        source: string;
+        target: string;
+    }[];
+} = {
     nodes: [],
     edges: [],
 }
 
+const noedesMap: Map<any, {
+        id: string; 
+        size?: { width: number, height: number }
+        row?: number;
+        column?: number;
+        x?: number;
+        y?: number;
+}> = new Map();
+    
+const edgesMap: Map<any, Edge<Edge.Properties>> = new Map();
+
 const initLevelDependence = () => {
-    const values: levelDependence[] = [
-        {
-            id: '1',
-            dependenceIds: []
-        },
-        {
-            id: '2',
-            dependenceIds: ['1']
-        },
-        {
-            id: '3',
-            dependenceIds: ['1']
-        },
-        {
-            id: '4',
-            dependenceIds: ['2', '3']
-        },
-        {
-            id: '5',
-            dependenceIds: ['4']
-        },
-        {
-            id: '6',
-            dependenceIds: []
-        },
-        {
-            id: '7',
-            dependenceIds: ['6']
-        },
-        {
-            id: '8',
-            dependenceIds: ['7']
-        },
-        {
-            id: '9',
-            dependenceIds: ['8']
-        },
-        {
-            id: '10',
-            dependenceIds: ['9']
-        },
-        {
-            id: '11',
-            dependenceIds: ['10']
-        },
-        {
-            id: '12',
-            dependenceIds: ['11']
-        },
-        {
-            id: '13',
-            dependenceIds: ['12']
-        },
-        {
-            id: '14',
-            dependenceIds: ['16']
-        },
-        {
-            id: '15',
-            dependenceIds: ['14', '16']
-        },
-        {
-            id: '16',
-            dependenceIds: ['14']
-        },
-        {
-            id: '17',
-            dependenceIds: ['9', '10', '12']
-        },
-        {
-            id: '18',
-            dependenceIds: ['15']
-        },
-        {
-            id: '19',
-            dependenceIds: []
-        },
-        {
-            id: '20',
-            dependenceIds: ['19']
-        },
-        {
-            id: '21',
-            dependenceIds: ['20', '23', '24']
-        },
-        {
-            id: '22',
-            dependenceIds: []
-        },
-        {
-            id: '23',
-            dependenceIds: ['19']
-        },
-        {
-            id: '24',
-            dependenceIds: ['19']
-        },
-        {
-            id: '25',
-            dependenceIds: ['20', '23', '24']
-        },
-        {
-            id: '26',
-            dependenceIds: ['21', '25']
-        },
-        {
-            id: '27',
-            dependenceIds: ['26']
-        },
-        {
-            id: '28',
-            dependenceIds: ['27']
-        },
-        {
-            id: '29',
-            dependenceIds: ['28']
-        },
-        {
-            id: '30',
-            dependenceIds: ['29']
-        },
-        {
-            id: '31',
-            dependenceIds: ['30']
-        },
-        {
-            id: '32',
-            dependenceIds: ['31']
-        },
-        {
-            id: '33',
-            dependenceIds: ['32']
-        },
-    ];
+    const values: LevelDependence[] = mockDatas;
     levelDependence.value = values;
     const nodes = values.map((item) => {
         return {
@@ -533,13 +436,13 @@ onMounted(async () => {
     });
     // newModel.nodes![0].x = newModel.nodes![0].y = gapSize;
     // 分配格子
-    const noedesMap = new Map();
+    
     newModel.nodes?.forEach((node) => {
         const rc = getRowColumn(node);
         const grideRow = rc.row;
         const grideColumn = rc.column;
-        node.row = grideRow;
-        node.column = grideColumn;
+        (node as any).row = grideRow;
+        (node as any).column = grideColumn;
         updatePosition(node, rc.row, rc.column);
         noedesMap.set(node.id, node);
     });
@@ -588,14 +491,14 @@ onMounted(async () => {
                 },
             }])
         } else if (cell.isNode()) {
-            const data = noedesMap.get(cell.id);
+            const data = noedesMap.get(cell.id)!;
             console.log(cell.id, {
                 row: data.row,
                 column: data.column,
             });
             const convert = convertNodePoint(
-                data.row,
-                data.column,
+                data.row!,
+                data.column!,
             );
             console.log(cell.id, {
                 x: convert.x,
@@ -630,7 +533,7 @@ onMounted(async () => {
     }
 
     data.nodes.forEach((node) => {
-        const position = convertNodePoint(node.row, node.column);
+        const position = convertNodePoint(node.row!, node.column!);
         costMap[position.y][position.x] = 1;
     });
 
@@ -640,13 +543,14 @@ onMounted(async () => {
 
     const refreshEdge = () => {
         graph?.removeCells(graph?.getEdges());
+        edgesMap.clear();
         console.log(JSON.stringify(costMap));
             // 计算每条边的路径
         data.edges.forEach((edgeData) => {
             const sourceNodedata = noedesMap.get(edgeData.source);
             const targetNodedata = noedesMap.get(edgeData.target);
-            const sourceConvertNode = convertNodePoint(sourceNodedata.row, sourceNodedata.column);
-            const targetConvertNode = convertNodePoint(targetNodedata.row, targetNodedata.column);
+            const sourceConvertNode = convertNodePoint(sourceNodedata!.row!, sourceNodedata!.column!);
+            const targetConvertNode = convertNodePoint(targetNodedata!.row!, targetNodedata!.column!);
             // 打开起点和终点的路径
             costMap[sourceConvertNode.y][sourceConvertNode.x] = 0;
             costMap[targetConvertNode.y][targetConvertNode.x] = 0;
@@ -684,7 +588,7 @@ onMounted(async () => {
             });
             vertices.shift(); // 去掉终点以及起点
             vertices.pop();
-            graph?.addEdge({
+            const edgeCell = graph!.addEdge({
                 source: sourcePosition,
                 target: targetPosition,
                 vertices,
@@ -705,7 +609,8 @@ onMounted(async () => {
                 }, */
                 zIndex: 10,
             });
-            /*  for (let i = 0; i < path.length - 1; i += 1) {
+            edgesMap.set(edgeData, edgeCell);    
+        /*  for (let i = 0; i < path.length - 1; i += 1) {
                     const sourceNode = path[i];
                     const targetNode = path[i + 1];
                     const sourcePosition = {
@@ -731,17 +636,17 @@ onMounted(async () => {
                         zIndex: 10,
                     });
                 }*/
-            });   
+        });   
     }
 
     refreshEdge();
 
     graph.on('node:mousemove', ({ e, x, y, node, view }) => { 
-        const data = noedesMap.get(node.id);
+        const data = noedesMap.get(node.id)!;
         const currentPosition = node.getPosition();
         const rc = getRowColumn(currentPosition);
         if (data.row !== rc.row || data.column !== rc.column) {
-            const sourceConvertNode = convertNodePoint(data.row, data.column);
+            const sourceConvertNode = convertNodePoint(data.row!, data.column!);
             const targetConvertNode = convertNodePoint(rc.row, rc.column);
             costMap[sourceConvertNode.y][sourceConvertNode.x] = 0;
             costMap[targetConvertNode.y][targetConvertNode.x] = 0;
@@ -753,7 +658,7 @@ onMounted(async () => {
         data.row = rc.row;
         data.column = rc.column;
         updatePosition(data, rc.row, rc.column);
-        node.position(data.x, data.y);
+        node.position(data.x!, data.y!);
     })
 
 });
@@ -767,7 +672,47 @@ const onSave = () => {
     }, 2000);
    
 }
+
+const onSerialize = () => {
+    const result: {
+        nodes: { id: string; x: number; y: number }[];
+        links: { fromNodeId: string; toNodeId: string; path: number[][] }[],
+    } = {
+        nodes: [],
+        links: [],
+    }
+    result.nodes = data.nodes.map((node) => {
+        const cn = convertNodePoint(node.row!, node.column!);
+        return {
+            id: node.id,
+            x: cn.x,
+            y: cn.y,
+        }
+    });
+    result.links = data.edges.map((edgeData) => {
+        const edgeCell = edgesMap.get(edgeData)!;
+        const points: Point[] = [];
+        points.push(edgeCell.getSourcePoint());
+        points.push(...edgeCell.getVertices());
+        points.push(edgeCell.getTargetPoint());
+        return {
+            fromNodeId: edgeData.source,
+            toNodeId: edgeData.target,
+            path: points.map((point) => {
+                return [Math.floor(point.x / (grideSize * 0.5)), Math.floor(point.y / (grideSize * 0.5))]
+            })
+        }
+    });
+    const fileName = `levelLayout.json`;
+    downloadData(fileName, strToBlob(JSON.stringify(result)));
+}
 </script>
 
 <style lang="scss" scoped>
+.control-area {
+    margin-top: 10px;
+    button + button {
+        margin-left: 10px;
+    }
+} 
 </style>
