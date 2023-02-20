@@ -18,25 +18,18 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref } from 'vue';
 import { Cell, Edge, Graph, Point } from "@antv/x6";
-import { DagreLayout } from '@antv/layout'
+import { DagreLayout, Model } from '@antv/layout'
 import { Scroller } from "@antv/x6-plugin-scroller";
 import { AStarFinder } from "astar-typescript-cost";
 import { LevelDependence } from './interfaces';
 import { mockDatas } from './mockData';
 
-const downloadData = (name: string, file: Blob) => {
-  const objectUrl = window.URL.createObjectURL(file);
-  const a = document.createElement('a');
-  a.href = objectUrl;
-  a.download = name;
-  a.click();
-  a.remove();
-};
+interface CustomNode { x: number; y: number; row?: number; column?: number };
 
-const strToBlob = (str: string) => new Blob([str]);
-
+// 关卡依赖关系
 const levelDependence: Ref<LevelDependence[]> = ref([])
 
+// 图数据
 const data: {
     nodes: {
         id: string; 
@@ -66,6 +59,16 @@ const noedesMap: Map<any, {
     
 const edgesMap: Map<any, Edge<Edge.Properties>> = new Map();
 
+let graph: Graph | undefined;
+
+// 网格大小
+const grideSize = 94;
+const eleSize = grideSize / 2;
+const gapSize = (grideSize - eleSize) / 2;
+
+// DAG图
+const costMap: number[][] = [];
+
 const initLevelDependence = () => {
     const values: LevelDependence[] = mockDatas;
     levelDependence.value = values;
@@ -93,229 +96,9 @@ const initLevelDependence = () => {
         }
     });
     data.edges = edges;
-    debugger;
 }
 
-const grideSize = 94;
-const eleSize = grideSize / 2;
-const gapSize = (grideSize - eleSize) / 2;
-/* const data = {
-    nodes: [
-        {
-            id: '1',
-            size: {
-                width: eleSize,
-                height: eleSize,
-            },
-            label: '1', 
-            zIndex: 20
-        },
-    ],
-    edges: [
-        {
-            source: '1',
-            target: '2',
-        },
-        {
-            source: '1',
-            target: '3',
-        },
-        {
-            source: '2',
-            target: '4',
-        },
-        {
-            source: '3',
-            target: '4',
-        },
-        {
-            source: '4',
-            target: '5',
-        },
-        {
-            source: '6',
-            target: '7',
-        },
-        {
-            source: '7',
-            target: '8',
-        },
-        {
-            source: '8',
-            target: '9',
-        },
-        {
-            source: '8',
-            target: '3',
-        },
-        {
-            source: '9',
-            target: '10',
-        },
-        {
-            source: '9',
-            target: '17',
-        },
-        {
-            source: '10',
-            target: '17',
-        },
-        {
-            source: '12',
-            target: '17',
-        },
-        {
-            source: '8',
-            target: '16',
-        },
-        {
-            source: '10',
-            target: '11',
-        },
-        {
-            source: '11',
-            target: '12',
-        },
-        {
-            source: '12',
-            target: '13',
-        },
-        {
-            source: '13',
-            target: '14',
-        },
-        {
-            source: '14',
-            target: '16',
-        },
-        {
-            source: '14',
-            target: '15',
-        },
-        {
-            source: '16',
-            target: '15',
-        },
-        {
-            source: '15',
-            target: '18',
-        },
-        {
-            source: '19',
-            target: '20',
-        },
-        {
-            source: '19',
-            target: '23',
-        },
-        {
-            source: '19',
-            target: '24',
-        },
-        {
-            source: '20',
-            target: '21',
-        },
-        {
-            source: '23',
-            target: '21',
-        },
-        {
-            source: '24',
-            target: '21',
-        },
-        {
-            source: '20',
-            target: '25',
-        },
-        {
-            source: '23',
-            target: '25',
-        },
-        {
-            source: '24',
-            target: '25',
-        },
-        {
-            source: '21',
-            target: '26',
-        },
-        {
-            source: '25',
-            target: '26',
-        },
-        {
-            source: '26',
-            target: '27',
-        },
-        {
-            source: '27',
-            target: '28',
-        },
-        {
-            source: '28',
-            target: '29',
-        },
-        {
-            source: '29',
-            target: '30',
-        },
-        {
-            source: '30',
-            target: '31',
-        },
-        {
-            source: '31',
-            target: '32',
-        },
-        {
-            source: '32',
-            target: '33',
-        },
-
-    ]
-}; */
-
-const convertNodePoint = (row: number, column: number) => {
-    return {
-        x: column * 2 + 1,
-        y: row * 2 + 1
-    }
-}
-
-/* for (let i = 2; i <= 33; i += 1) {
-    data.nodes.push({
-        id: `${i}`,
-        size: {
-            width: eleSize,
-            height: eleSize,
-        },
-        label: `${i}`,
-        zIndex: 20,
-    });
-} */
-
-let sdata: {
-    cells: any;
-} | undefined = undefined;
-let graph: Graph | undefined;
-
-const getRowColumn = (node) => {
-        const grideRow = Math.floor(node.y / grideSize);
-        const grideColumn = Math.floor(node.x / grideSize);
-        return {
-            row: grideRow,
-            column: grideColumn
-        }
-    }
-
-const updatePosition = (node, row: number, column: number) => {
-    node.y = row * 94 + gapSize;
-    node.x = column * 94 + gapSize;
-}
-
-onMounted(async () => {
-    initLevelDependence();
+const initGraph = () => {
     graph = new Graph({
         container: document.getElementById('container')!,
         width: 800,
@@ -348,6 +131,9 @@ onMounted(async () => {
             }, */
         })
     );
+}
+
+const layoutNodes = () => {
     const gridLayout = new DagreLayout({
         type: 'dagre',
         // begin: [0, 0],
@@ -357,130 +143,66 @@ onMounted(async () => {
         nodesep: gapSize ,
         controlPoints: true,
     })
-    const newModel = gridLayout.layout(data);
+    return gridLayout.layout(data);
+}
 
-    const newData = {
-        /* edges: newModel.edges?.map((edge) => {
-            return {
-                ...edge,
-                router: {
-                    name: "manhattan",
-                    step: grideSize
-                },
-                attrs: {
-                    line: {
-                        targetMarker: null,
-                        strokeDasharray: 5,
-                        stroke: '#1890ff',
-                        opacity: 0.4
-                    }
-                },
-                connector: {
-                    name: 'jumpover',
-                    args: {
-                    type: 'arc',
-                    },
-                },
-            }
-        }), */
-        nodes: newModel.nodes,
-    };
-    // (newModel!.nodes![0] as any).y = gapSize;
-    // (newModel!.nodes![0] as any).x = gapSize;
-    
-    const findMinLeftNode = (nodes?: any[]) => {
-        const nodesOrder = (nodes || newModel.nodes)?.slice().sort((nodeA, nodeB) => {
-            return (nodeA as any).x - (nodeB as any).x;
-        });
-        return nodesOrder?.filter((node) => (node as any).x === (nodesOrder[0] as any).x);
+// 转换网格row column坐标到 DAG图坐标
+const convertNodePoint = (row: number, column: number) => {
+    return {
+        x: column * 2 + 1,
+        y: row * 2 + 1
     }
-    const findMaxRightNode = (nodes?: any[]) => {
-        const nodesOrder = (nodes || newModel.nodes)?.slice().sort((nodeA, nodeB) => {
-            return (nodeB as any).x - (nodeA as any).x;
-        });
-        return nodesOrder?.filter((node) => (node as any).x === (nodesOrder[0] as any).x);
-    }
-    const findMaxBottomNode = (nodes?: any[]) => {
-        const nodesOrder = (nodes || newModel.nodes)?.slice().sort((nodeA, nodeB) => {
-            return (nodeB as any).y - (nodeA as any).y;
-        });
-        return nodesOrder?.filter((node) => (node as any).x === (nodesOrder[0] as any).x);
-    }
-    const findMinTopNode = (nodes?: any[]) => {
-        const nodesOrder = (nodes || newModel.nodes)?.slice().sort((nodeA, nodeB) => {
-            return (nodeA as any).y - (nodeB as any).y;
-        });
-        return nodesOrder?.filter((node) => (node as any).y === (nodesOrder[0] as any).y);
-    }
-    const minLeftNode = findMinLeftNode()![0];
-    const minYNode = findMinLeftNode(findMinTopNode())![0];
-    const maxRightNode = findMaxRightNode()![0];
-    const maxYNode = findMaxRightNode(findMaxBottomNode())![0];
+}
 
-    console.log(minLeftNode);
-    console.log(minYNode);
-    console.log(maxRightNode);
-    console.log(maxYNode);
+const getRowColumn = (node) => {
+        const grideRow = Math.floor(node.y / grideSize);
+        const grideColumn = Math.floor(node.x / grideSize);
+        return {
+            row: grideRow,
+            column: grideColumn
+        }
+    }
+
+const updatePosition = (node, row: number, column: number) => {
+    node.y = row * 94 + gapSize;
+    node.x = column * 94 + gapSize;
+}
+
+const moveGraphToLeftTop = (minLeftNode: CustomNode, minYNode: CustomNode, model: Model) => {
     // 设置到左上角
     const minX = minLeftNode.x;
     const minY = minYNode.y;
     const minXGap = minX - gapSize;
     const minYGap = minY - gapSize;
 
-    newModel.nodes?.forEach((node) => {
-        (node as any).x -= minXGap
+    model.nodes?.forEach((node) => {
+        (node as unknown as CustomNode).x -= minXGap
     });
 
-    newModel.nodes?.forEach((node) => {
-        (node as any).y -= minYGap
+    model.nodes?.forEach((node) => {
+        (node as unknown as CustomNode).y -= minYGap
     });
-    // newModel.nodes![0].x = newModel.nodes![0].y = gapSize;
-    // 分配格子
-    
-    newModel.nodes?.forEach((node) => {
+}
+
+// 分配格子到row column
+const assignNodeToGrid = (model: Model) => {
+    model.nodes?.forEach((node) => {
         const rc = getRowColumn(node);
         const grideRow = rc.row;
         const grideColumn = rc.column;
-        (node as any).row = grideRow;
-        (node as any).column = grideColumn;
+        (node as unknown as CustomNode).row = grideRow;
+        (node as unknown as CustomNode).column = grideColumn;
         updatePosition(node, rc.row, rc.column);
         noedesMap.set(node.id, node);
     });
-    console.log(newModel);
-    graph.fromJSON(newData);
-    console.log(newData);
-    graph.on('cell:mouseleave', ({ cell }) => {
+}
+
+const initGraphListener = (graph: Graph) => {
+    graph!.on('cell:mouseleave', ({ cell }) => {
         cell.removeTools()
     })
-    graph.on('cell:mouseenter', ({ cell }) => {
-        /* if (cell.isNode()) {
-            cell.addTools([
-            {
-                name: 'boundary',
-                args: {
-                attrs: {
-                    fill: '#7c68fc',
-                    stroke: '#333',
-                    'stroke-width': 1,
-                    'fill-opacity': 0.2,
-                },
-                },
-            },
-            {
-                name: 'button-remove',
-                args: {
-                x: 0,
-                y: 0,
-                offset: { x: 10, y: 10 },
-                },
-            },
-            ])
-        } else {
-            cell.addTools(['vertices', 'segments'])
-        } */
+    graph!.on('cell:mouseenter', ({ cell }) => {
         if (cell.isEdge()) {
-            console.log(cell.id, cell.getVertices());
-            // console.log();
             cell.addTools([{
                 name: 'segments',
                     args: {
@@ -519,129 +241,7 @@ onMounted(async () => {
             ])
         }
     })
-
-    const mapRect = [minYNode.row, minLeftNode.column, maxYNode.row, maxRightNode.column];
-    // 一个格子 划分四个格子
-    mapRect[2]  = (mapRect[2] + 1) * 2;
-    mapRect[3] = (mapRect[3] + 1) * 2;
-    const costMap: number[][] = [];
-    for (let i = 0; i <= mapRect[2]; i += 1) {
-        costMap.push([]);
-        for (let j = 0; j < mapRect[3] + 1; j += 1) {
-            costMap[i].push(0);
-        }
-    }
-
-    data.nodes.forEach((node) => {
-        const position = convertNodePoint(node.row!, node.column!);
-        costMap[position.y][position.x] = 1;
-    });
-
-    console.log('costMap \n: ', JSON.stringify(costMap));
-
-    const pathMap = new Map();
-
-    const refreshEdge = () => {
-        graph?.removeCells(graph?.getEdges());
-        edgesMap.clear();
-        console.log(JSON.stringify(costMap));
-            // 计算每条边的路径
-        data.edges.forEach((edgeData) => {
-            const sourceNodedata = noedesMap.get(edgeData.source);
-            const targetNodedata = noedesMap.get(edgeData.target);
-            const sourceConvertNode = convertNodePoint(sourceNodedata!.row!, sourceNodedata!.column!);
-            const targetConvertNode = convertNodePoint(targetNodedata!.row!, targetNodedata!.column!);
-            // 打开起点和终点的路径
-            costMap[sourceConvertNode.y][sourceConvertNode.x] = 0;
-            costMap[targetConvertNode.y][targetConvertNode.x] = 0;
-            const aStarInstance = new AStarFinder({
-                grid: {
-                    matrix: costMap,
-                },
-                heuristic: "Manhattan",
-                diagonalAllowed: false
-            });
-            const findPath = aStarInstance.findPath(sourceConvertNode, targetConvertNode);
-            pathMap.set(edgeData, findPath);
-            // 关闭起点和终点的路径
-            costMap[sourceConvertNode.y][sourceConvertNode.x] = 1;
-            costMap[targetConvertNode.y][targetConvertNode.x] = 1;
-        });
-        // 添加边
-            data.edges.forEach((edgeData) => {
-            const path = pathMap.get(edgeData) as number[][];
-            const sourceNode = path[0];
-            const targetNode = path[path.length - 1];
-            const sourcePosition = {
-                x: sourceNode[0] * grideSize / 2,
-                y: sourceNode[1] * grideSize / 2,
-            }
-            const targetPosition = {
-                x: targetNode[0] * grideSize / 2,
-                y: targetNode[1] * grideSize / 2,
-            }
-            const vertices = path.map((node) => {
-                return {
-                    x: node[0] * grideSize / 2,
-                    y: node[1] * grideSize / 2,
-                }
-            });
-            vertices.shift(); // 去掉终点以及起点
-            vertices.pop();
-            const edgeCell = graph!.addEdge({
-                source: sourcePosition,
-                target: targetPosition,
-                vertices,
-                attrs: {
-                    line: {
-                        targetMarker: null,
-                        strokeDasharray: 5,
-                        stroke: '#1890ff',
-                        opacity: 0.4
-                    }
-                },
-                /* connector: {
-                    name: 'jumpover',
-                    args: {
-                        type: 'arc',
-                        size: 4,
-                    },
-                }, */
-                zIndex: 10,
-            });
-            edgesMap.set(edgeData, edgeCell);    
-        /*  for (let i = 0; i < path.length - 1; i += 1) {
-                    const sourceNode = path[i];
-                    const targetNode = path[i + 1];
-                    const sourcePosition = {
-                        x: sourceNode[0] * grideSize / 2,
-                        y: sourceNode[1] * grideSize / 2,
-                    }
-                    const targetPosition = {
-                        x: targetNode[0] * grideSize / 2,
-                        y: targetNode[1] * grideSize / 2,
-                    }
-                    debugger;
-                    graph.addEdge({
-                        source: sourcePosition,
-                        target: targetPosition,
-                        attrs: {
-                            line: {
-                                targetMarker: null,
-                                strokeDasharray: 5,
-                                stroke: '#1890ff',
-                                opacity: 0.4
-                            }
-                        },
-                        zIndex: 10,
-                    });
-                }*/
-        });   
-    }
-
-    refreshEdge();
-
-    graph.on('node:mousemove', ({ e, x, y, node, view }) => { 
+    graph!.on('node:mousemove', ({ e, x, y, node, view }) => { 
         const data = noedesMap.get(node.id)!;
         const currentPosition = node.getPosition();
         const rc = getRowColumn(currentPosition);
@@ -660,19 +260,156 @@ onMounted(async () => {
         updatePosition(data, rc.row, rc.column);
         node.position(data.x!, data.y!);
     })
+}
+
+const initCostMap = (minLeftNode: CustomNode, minYNode: CustomNode, maxRightNode: CustomNode, maxYNode: CustomNode) => {
+    const mapRect = [minYNode.row, minLeftNode.column, maxYNode.row, maxRightNode.column];
+    // 一个格子 划分四个格子
+    mapRect[2]  = (mapRect[2]! + 1) * 2;
+    mapRect[3] = (mapRect[3]! + 1) * 2;
+    
+    for (let i = 0; i <= mapRect[2]; i += 1) {
+        costMap.push([]);
+        for (let j = 0; j < mapRect[3] + 1; j += 1) {
+            costMap[i].push(0);
+        }
+    }
+
+    data.nodes.forEach((node) => {
+        const position = convertNodePoint(node.row!, node.column!);
+        costMap[position.y][position.x] = 1;
+    });
+}
+
+onMounted(async () => {
+    initLevelDependence();
+    initGraph();
+    const model = layoutNodes();
+
+    const minLeftNode = findMinLeftNode(model.nodes as unknown as CustomNode[])![0];
+    const minYNode = findMinLeftNode(findMinTopNode(model.nodes as unknown as CustomNode[]))![0];
+    const maxRightNode = findMaxRightNode(model.nodes as unknown as CustomNode[])![0];
+    const maxYNode = findMaxRightNode(findMaxBottomNode(model.nodes as unknown as CustomNode[]))![0];
+
+    moveGraphToLeftTop(minLeftNode, minYNode, model);
+    assignNodeToGrid(model);
+    initCostMap(minLeftNode, minYNode, maxRightNode, maxYNode);
+
+
+    graph!.fromJSON(model);
+
+    initGraphListener(graph!);
+
+    refreshEdge();
 
 });
 
-const onSave = () => {
-    sdata = graph!.toJSON();
-    console.log(graph!.toJSON());
-    graph?.clearCells();
-    setTimeout(() => {
-        graph?.fromJSON(sdata as any);
-    }, 2000);
-   
+// 生成线
+const refreshEdge = () => {
+    const pathMap = new Map();
+    graph?.removeCells(graph?.getEdges());
+    edgesMap.clear();
+    console.log(JSON.stringify(costMap));
+        // 计算每条边的路径
+    data.edges.forEach((edgeData) => {
+        const sourceNodedata = noedesMap.get(edgeData.source);
+        const targetNodedata = noedesMap.get(edgeData.target);
+        const sourceConvertNode = convertNodePoint(sourceNodedata!.row!, sourceNodedata!.column!);
+        const targetConvertNode = convertNodePoint(targetNodedata!.row!, targetNodedata!.column!);
+        // 打开起点和终点的路径
+        costMap[sourceConvertNode.y][sourceConvertNode.x] = 0;
+        costMap[targetConvertNode.y][targetConvertNode.x] = 0;
+        const aStarInstance = new AStarFinder({
+            grid: {
+                matrix: costMap,
+            },
+            heuristic: "Manhattan",
+            diagonalAllowed: false
+        });
+        const findPath = aStarInstance.findPath(sourceConvertNode, targetConvertNode);
+        pathMap.set(edgeData, findPath);
+        // 关闭起点和终点的路径
+        costMap[sourceConvertNode.y][sourceConvertNode.x] = 1;
+        costMap[targetConvertNode.y][targetConvertNode.x] = 1;
+    });
+    // 添加边
+    data.edges.forEach((edgeData) => {
+        const path = pathMap.get(edgeData) as number[][];
+        const sourceNode = path[0];
+        const targetNode = path[path.length - 1];
+        const sourcePosition = {
+            x: sourceNode[0] * grideSize / 2,
+            y: sourceNode[1] * grideSize / 2,
+        }
+        const targetPosition = {
+            x: targetNode[0] * grideSize / 2,
+            y: targetNode[1] * grideSize / 2,
+        }
+        const vertices = path.map((node) => {
+            return {
+                x: node[0] * grideSize / 2,
+                y: node[1] * grideSize / 2,
+            }
+        });
+        vertices.shift(); // 去掉终点以及起点
+        vertices.pop();
+        const edgeCell = graph!.addEdge({
+            source: sourcePosition,
+            target: targetPosition,
+            vertices,
+            attrs: {
+                line: {
+                    targetMarker: null,
+                    strokeDasharray: 5,
+                    stroke: '#1890ff',
+                    opacity: 0.4
+                }
+            },
+            /* connector: {
+                name: 'jumpover',
+                args: {
+                    type: 'arc',
+                    size: 4,
+                },
+            }, */
+            zIndex: 10,
+        });
+        edgesMap.set(edgeData, edgeCell);    
+    }); 
+    pathMap.clear();  
 }
 
+const findMinLeftNode = (nodes: CustomNode[]) => {
+        const nodesOrder = nodes.slice().sort((nodeA, nodeB) => {
+            return nodeA .x - nodeB.x;
+        });
+        return nodesOrder?.filter((node) => node.x === nodesOrder[0].x);
+    }
+const findMaxRightNode = (nodes: CustomNode[]) => {
+    const nodesOrder = nodes.slice().sort((nodeA, nodeB) => {
+        return nodeB.x - nodeA.x;
+    });
+    return nodesOrder?.filter((node) => node.x === nodesOrder[0].x);
+}
+const findMaxBottomNode = (nodes: CustomNode[]) => {
+    const nodesOrder = nodes.slice().sort((nodeA, nodeB) => {
+        return nodeB.y - nodeA.y;
+    });
+    return nodesOrder?.filter((node) => node.x === nodesOrder[0].x);
+}
+const findMinTopNode = (nodes: CustomNode[]) => {
+    const nodesOrder = nodes.slice().sort((nodeA, nodeB) => {
+        return nodeA.y - nodeB.y;
+    });
+    return nodesOrder?.filter((node) => node.y === nodesOrder[0].y);
+}
+
+const onSave = () => {
+    const graphData = graph!.toJSON();
+    // todo 编辑器图形数据
+}
+
+// 关卡序列化数据
 const onSerialize = () => {
     const result: {
         nodes: { id: string; x: number; y: number }[];
@@ -706,6 +443,19 @@ const onSerialize = () => {
     const fileName = `levelLayout.json`;
     downloadData(fileName, strToBlob(JSON.stringify(result)));
 }
+
+// 下载文件
+const downloadData = (name: string, file: Blob) => {
+  const objectUrl = window.URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = objectUrl;
+  a.download = name;
+  a.click();
+  a.remove();
+};
+
+const strToBlob = (str: string) => new Blob([str]);
+
 </script>
 
 <style lang="scss" scoped>
