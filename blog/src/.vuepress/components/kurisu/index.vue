@@ -4,10 +4,11 @@
         <div v-if="uiState.loadingProgress" class="loading-status" :class="{ 'error-tips' : uiState.loadingProgress.indexOf('error') >= 0 }">
             {{ uiState.loadingProgress }}
         </div>
-        <div class="chat-input" :class="{ 'sedding' : uiState.sending }">
+        <div v-if="!uiState.loadingProgress" class="chat-input" :class="{ 'sedding' : uiState.sending }">
+            <van-icon v-if="audioContents.length" class="message" size="30px" name="chat" :badge="audioContents.length" @click="onRead" />
             <van-loading class="loading" v-if="uiState.sending" />
             <input :disabled="uiState.sending" type="text" placeholder="请输入..." :value="inputValue"/>
-            <van-icon class="send-btn" name="chat" size="30px" color="currentColor" @click="onSend" />
+            <van-icon class="send-btn" name="share" size="30px" @click="onSend" />
         </div>
     </div>
     <Live2dDebuggerEditor v-model:show-drawer="uiState.showDrawer" :model="model" />
@@ -39,6 +40,7 @@ const uiState = reactive({
 const inputValue = ref('今日はいい天気ですね。');
 
 const model: Ref<ModelEntity | undefined> = ref();
+const audioContents: Ref<string[]> = ref([]);
 
 let app: App;
 
@@ -66,15 +68,27 @@ const watchModel = (model: ModelEntity) => {
     });
 }
 
+const onRead = () => {
+    if (audioContents.value.length) {
+        const base64Content = audioContents.value.shift();
+        if (base64Content) {
+            model.value?.pixiModel?.motion('Idle', 0, undefined, base64Content);
+        }
+    }
+} 
+
 const onSend = async () => {
+    if (!inputValue.value.trim()) {
+        return;
+    }
     uiState.sending = true;
     try {
         const res = await fetchChat({
-            text: '今日はいい天気ですね。'
+            text: inputValue.value.trim()
         });
         // inputValue.value = '';
-        debugger;
-        model.value?.pixiModel?.motion('Idle', 0, undefined, res.Data.audio);
+        audioContents.value.push(res.Data.audio);
+        // model.value?.pixiModel?.motion('Idle', 0, undefined, res.Data.audio);
     } finally {
         uiState.sending = false;
     }
@@ -129,19 +143,28 @@ onMounted(async () => {
         flex-direction: row;
         align-items: center;
 
+        .message {
+            color: white; 
+            font-size: 30px;
+            position: absolute;
+            top: -35px;
+            left: 20px;
+            cursor: pointer;
+        }
+
         input {
             flex-grow: 1;
-            margin-left: 20px;
-            margin-right: 20px;
-            color: currentColor;
+            color: #2c3e50;
             border: none;
             height: 70%;
             background: none;
+            padding-left: 10px;
         }
 
         .send-btn {
-            margin-right: 10px;
+            padding-right: 10px;
             cursor: pointer;
+            color: #2c3e50;
         }
 
         .loading {
@@ -153,6 +176,9 @@ onMounted(async () => {
 
     .chat-input.sedding {
         input {
+            color: darkgrey;
+        }
+        .send-btn {
             color: darkgrey;
         }
     }
