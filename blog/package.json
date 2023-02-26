@@ -20,7 +20,7 @@
   "dependencies": {
     "@vant/touch-emulator": "^1.4.0",
     "compressorjs": "^1.1.1",
-    "pixi-live2d-display": "git+https://github.com/windjackz/pixi-live2d-display.git#release/20230226_2",
+    "pixi-live2d-display": "git+https://github.com/windjackz/pixi-live2d-display.git#release/20230226_3",
     "pixi.js": "^6.1.0",
     "vant": "^4.0.7"
   }
