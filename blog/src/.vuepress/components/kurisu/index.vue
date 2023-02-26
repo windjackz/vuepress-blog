@@ -7,7 +7,7 @@
         <div v-if="!uiState.loadingProgress" class="chat-input" :class="{ 'sedding' : uiState.sending }">
             <van-icon v-if="audioContents.length" class="message" size="30px" name="chat" :badge="audioContents.length" @click="onRead" />
             <van-loading class="loading" v-if="uiState.sending" />
-            <input :disabled="uiState.sending" type="text" placeholder="请输入..." :value="inputValue"/>
+            <input :disabled="uiState.sending" type="text" placeholder="..." v-model="inputValue"/>
             <van-icon class="send-btn" name="share" size="30px" @click="onSend" />
         </div>
     </div>
