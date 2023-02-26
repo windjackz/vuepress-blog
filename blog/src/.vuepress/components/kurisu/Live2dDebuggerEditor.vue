@@ -271,7 +271,7 @@ onBeforeUnmount(() => {
     right: 0;
     opacity: .24;
     background: linear-gradient(var(--theme-color), var(--theme-color)) no-repeat;
-    background-size: v-bind("progressCssVar") auto;
+    background-size: v-bind("progressCssVar") 100%;
 }
 
 .primary--text {

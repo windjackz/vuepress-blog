@@ -1,15 +1,17 @@
-import { Application, Ticker, Container, Point } from 'pixi.js';
+import { Application, Ticker, Container, Point, Sprite } from 'pixi.js';
 import { Live2DModel } from '../../framework/live2d/Live2DModel';
 
 Live2DModel.registerTicker(Ticker);
+const designSize = { w: 1920, h: 1080 };
 
 export default class App {
 
     public container: Container;
     public app: Application;
 
+    private bg: Sprite;
+
     constructor(canvasId: string) {
-        const designSize = { w: 1920, h: 1080 };
         const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
         if (canvas) {
             this.app = new Application({
@@ -45,5 +47,12 @@ export default class App {
     
             resize();
         }
+    }
+
+    loadBg() {
+        this.bg = Sprite.from('/assets/images/kurisu/BG01A.png');
+        this.bg.position.x = -designSize.w / 2;
+        this.bg.position.y = -designSize.h / 2;
+        this.container.addChild(this.bg);
     }
 }
