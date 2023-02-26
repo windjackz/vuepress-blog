@@ -69,10 +69,12 @@ const watchModel = (model: ModelEntity) => {
 const onSend = async () => {
     uiState.sending = true;
     try {
-        await fetchChat({
+        const res = await fetchChat({
             text: '今日はいい天気ですね。'
         });
-        inputValue.value = '';
+        // inputValue.value = '';
+        debugger;
+        model.value?.pixiModel?.motion('Idle', 0, undefined, res.Data.audio);
     } finally {
         uiState.sending = false;
     }
