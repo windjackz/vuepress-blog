@@ -1,5 +1,5 @@
 ---
-title: 1分钟了解手游性能优化(2)——简单了解PC与移动端硬件差异
+title: 1分钟简单了解PC与移动端硬件差异(2)
 icon: article
 description: 
 category:
@@ -50,7 +50,4 @@ star: false
 - Low Power Double Data Rate DRAM
   
   简称LPDDR（Low Power Double Data Rate）是移动设备常用的一种低功耗SDRAM，以低功耗和小体积著称，专用于移动电子产品。
-
-
-
 
