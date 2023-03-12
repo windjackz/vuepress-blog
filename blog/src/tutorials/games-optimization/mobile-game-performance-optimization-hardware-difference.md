@@ -1,5 +1,5 @@
 ---
-title: 1分钟简单了解PC与移动端硬件差异(2)
+title: 1分钟了解手游性能优化(2)——简单了解PC与移动端硬件差异
 icon: article
 description: 
 category:
