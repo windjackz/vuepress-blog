@@ -4,8 +4,15 @@
         <div v-if="uiState.loadingProgress" class="loading-status" :class="{ 'error-tips' : uiState.loadingProgress.indexOf('error') >= 0 }">
             {{ uiState.loadingProgress }}
         </div>
-        <div v-if="!uiState.loadingProgress" class="chat-input" :class="{ 'sedding' : uiState.sending }">
+        <div class="chat-panel">
             <van-icon v-if="audioContents.length" class="message" size="30px" name="chat" :badge="audioContents.length" @click="onRead" />
+            <div class="chat-content" style="height: 0px;">
+                <div class="p">
+                    ...
+                </div>
+            </div>
+        </div>
+        <div v-if="!uiState.loadingProgress" class="chat-input" :class="{ 'sedding' : uiState.sending }">
             <van-loading class="loading" v-if="uiState.sending" />
             <input :disabled="uiState.sending" type="text" placeholder="..." v-model="inputValue"/>
             <van-icon class="send-btn" name="share" size="30px" @click="onSend" />
@@ -132,6 +139,45 @@ onMounted(async () => {
     padding-bottom: 100%;
     margin: 0 auto;
 
+    .chat-panel {
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+    }
+
+    .chat-content {
+        width: 100%;
+        height: 100px;
+        padding-bottom: 50px;
+        bottom: 0px;
+        background: aliceblue;
+        border-radius: 10px 10px 0px 0px;
+        opacity: 0.7;
+        transition: 0.2s;
+        color: #2c3e50;
+
+        .p{
+            position: relative;
+            padding: 10px;
+            text-align: left;
+            overflow-y: scroll;
+            height: 70px;
+        }
+
+        .p::-webkit-scrollbar-thumb {
+            background: #b8cde2;
+        }
+    }
+
+    .message {
+        color: white; 
+        font-size: 30px;
+        position: absolute;
+        top: -35px;
+        left: 20px;
+        cursor: pointer;
+    }
+
     .chat-input {
         position: absolute;
         width: 100%;
@@ -142,15 +188,6 @@ onMounted(async () => {
         display: flex;
         flex-direction: row;
         align-items: center;
-
-        .message {
-            color: white; 
-            font-size: 30px;
-            position: absolute;
-            top: -35px;
-            left: 20px;
-            cursor: pointer;
-        }
 
         input {
             flex-grow: 1;
