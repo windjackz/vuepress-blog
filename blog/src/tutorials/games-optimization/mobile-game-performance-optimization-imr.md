@@ -1,5 +1,5 @@
 ---
-title: 1分钟了解GPU渲染架构之IMR(3)
+title: 1分钟了解手游性能优化(3)——GPU渲染架构之IMR
 icon: article
 description: 
 category:
