@@ -22,7 +22,7 @@ star: false
 
 以执行Drawcall 1 为例， GPU首先会从VDRAM上提取Triangle A的顶点数据(Vertex Data)。然后进行坐标变换，裁剪，屏幕映射等阶段后，会进入到光栅化阶段（Rasterization）。
 
-光栅化阶段会把上面阶段得到的几何数据(Geometry Data) 转为成片元(fragment)并内插出逐片段(pre-fragment)所需要的相关属性（深度，颜色，纹理坐标等）。现在大部分GPU支持early depth testing(提前深度测试)。这是一种硬件特性，允许在片元这色器执行前进行深度测试，如果某个片元是不可见的，则丢弃它，以减少片元着色的工作量。
+光栅化阶段会把上面阶段得到的几何数据(Geometry Data) 转为成片元(fragment)并内插出逐片段(per-fragment)所需要的相关属性（深度，颜色，纹理坐标等）。现在大部分GPU支持early depth testing(提前深度测试)。这是一种硬件特性，允许在片元这色器执行前进行深度测试，如果某个片元是不可见的，则丢弃它，以减少片元着色的工作量。
 
 进入Fragment processing阶段，每个片元会从VDRAM中提取纹理数据(texture data)并进行shader计算。如果片元着色器会调整深度，则下一步会进行Later depth testing，这里可能会再读写Depth Buffer。
 
