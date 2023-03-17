@@ -4,8 +4,15 @@
         <div v-if="uiState.loadingProgress" class="loading-status" :class="{ 'error-tips' : uiState.loadingProgress.indexOf('error') >= 0 }">
             {{ uiState.loadingProgress }}
         </div>
+        <div class="chat-panel">
+            <van-icon v-if="chatContents.length" class="message" size="30px" name="chat" :badge="chatContents.length" @click="onRead" />
+            <div class="chat-content" :style="{ height: `${uiState.chatContentHeight}px` }">
+                <div class="p">
+                    <VueWriter v-if="uiState.chatContentHeight" :typeSpeed="70" :iterations='1' :array="uiState.text" />
+                </div>
+            </div>
+        </div>
         <div v-if="!uiState.loadingProgress" class="chat-input" :class="{ 'sedding' : uiState.sending }">
-            <van-icon v-if="audioContents.length" class="message" size="30px" name="chat" :badge="audioContents.length" @click="onRead" />
             <van-loading class="loading" v-if="uiState.sending" />
             <input :disabled="uiState.sending" type="text" placeholder="..." v-model="inputValue"/>
             <van-icon class="send-btn" name="share" size="30px" @click="onSend" />
@@ -18,6 +25,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, Ref, reactive } from 'vue';
+import VueWriter from '../common/vue-writer.vue'
 import App from './App';
 import { Live2DModel } from '../../framework/live2d/Live2DModel';
 import Live2dSettingButton from './Live2dSettingButton.vue';
@@ -35,12 +43,15 @@ const uiState = reactive({
     showDrawer: false,
     loadingProgress: '',
     sending: false,
+    chatContentHeight: 0,
+    text: ['...']
 });
 
 const inputValue = ref('今日はいい天気ですね。');
 
 const model: Ref<ModelEntity | undefined> = ref();
-const audioContents: Ref<string[]> = ref([]);
+    
+const chatContents: Ref<{ audio: string, text: string}[]> = ref([]);
 
 let app: App;
 
@@ -69,10 +80,12 @@ const watchModel = (model: ModelEntity) => {
 }
 
 const onRead = () => {
-    if (audioContents.value.length) {
-        const base64Content = audioContents.value.shift();
-        if (base64Content) {
-            model.value?.pixiModel?.motion('Idle', 0, undefined, base64Content);
+    if (chatContents.value.length) {
+        const chatContent = chatContents.value.shift();
+        uiState.chatContentHeight = 100;
+        if (chatContent) {
+            model.value?.pixiModel?.motion('Idle', 0, undefined, chatContent.audio);
+            uiState.text = [chatContent.text];
         }
     }
 } 
@@ -87,14 +100,13 @@ const onSend = async () => {
             text: inputValue.value.trim()
         });
         // inputValue.value = '';
-        audioContents.value.push(res.Data.audio);
+        chatContents.value.push({ audio: res.Data.audio, text: res.Data.text } );
         // model.value?.pixiModel?.motion('Idle', 0, undefined, res.Data.audio);
     } finally {
         uiState.sending = false;
     }
 }
 
-// 请求解密图片
 const fetchChat = async ({ text } : {text: string}) => {
     const param = {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -132,6 +144,46 @@ onMounted(async () => {
     padding-bottom: 100%;
     margin: 0 auto;
 
+    .chat-panel {
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+    }
+
+    .chat-content {
+        width: 100%;
+        height: 100px;
+        padding-bottom: 50px;
+        bottom: 0px;
+        background: aliceblue;
+        border-radius: 10px 10px 0px 0px;
+        opacity: 0.7;
+        transition: 0.2s;
+        color: #2c3e50;
+        overflow: hidden;
+
+        .p{
+            position: relative;
+            padding: 10px;
+            text-align: left;
+            overflow-y: scroll;
+            height: 70px;
+        }
+
+        .p::-webkit-scrollbar-thumb {
+            background: #b8cde2;
+        }
+    }
+
+    .message {
+        color: white; 
+        font-size: 30px;
+        position: absolute;
+        top: -35px;
+        left: 20px;
+        cursor: pointer;
+    }
+
     .chat-input {
         position: absolute;
         width: 100%;
@@ -142,15 +194,6 @@ onMounted(async () => {
         display: flex;
         flex-direction: row;
         align-items: center;
-
-        .message {
-            color: white; 
-            font-size: 30px;
-            position: absolute;
-            top: -35px;
-            left: 20px;
-            cursor: pointer;
-        }
 
         input {
             flex-grow: 1;
