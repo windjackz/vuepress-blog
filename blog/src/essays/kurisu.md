@@ -26,6 +26,12 @@ const Kurisu = defineAsyncComponent(() => import('@Kurisu'))
 
 ## 修改日志
 
+### 0.4.0 (2023-03-17)
+
+### Features
+
+- **interact:** add chat panel
+
 ### 0.3.0 (2023-02-26)
 
 ### Features

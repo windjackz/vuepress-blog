@@ -5,10 +5,10 @@
             {{ uiState.loadingProgress }}
         </div>
         <div class="chat-panel">
-            <van-icon v-if="audioContents.length" class="message" size="30px" name="chat" :badge="audioContents.length" @click="onRead" />
-            <div class="chat-content" style="height: 0px;">
+            <van-icon v-if="chatContents.length" class="message" size="30px" name="chat" :badge="chatContents.length" @click="onRead" />
+            <div class="chat-content" :style="{ height: `${uiState.chatContentHeight}px` }">
                 <div class="p">
-                    ...
+                    <VueWriter v-if="uiState.chatContentHeight" :typeSpeed="70" :iterations='1' :array="uiState.text" />
                 </div>
             </div>
         </div>
@@ -25,6 +25,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, Ref, reactive } from 'vue';
+import VueWriter from '../common/vue-writer.vue'
 import App from './App';
 import { Live2DModel } from '../../framework/live2d/Live2DModel';
 import Live2dSettingButton from './Live2dSettingButton.vue';
@@ -42,12 +43,15 @@ const uiState = reactive({
     showDrawer: false,
     loadingProgress: '',
     sending: false,
+    chatContentHeight: 0,
+    text: ['...']
 });
 
 const inputValue = ref('今日はいい天気ですね。');
 
 const model: Ref<ModelEntity | undefined> = ref();
-const audioContents: Ref<string[]> = ref([]);
+    
+const chatContents: Ref<{ audio: string, text: string}[]> = ref([]);
 
 let app: App;
 
@@ -76,10 +80,12 @@ const watchModel = (model: ModelEntity) => {
 }
 
 const onRead = () => {
-    if (audioContents.value.length) {
-        const base64Content = audioContents.value.shift();
-        if (base64Content) {
-            model.value?.pixiModel?.motion('Idle', 0, undefined, base64Content);
+    if (chatContents.value.length) {
+        const chatContent = chatContents.value.shift();
+        uiState.chatContentHeight = 100;
+        if (chatContent) {
+            model.value?.pixiModel?.motion('Idle', 0, undefined, chatContent.audio);
+            uiState.text = [chatContent.text];
         }
     }
 } 
@@ -94,14 +100,13 @@ const onSend = async () => {
             text: inputValue.value.trim()
         });
         // inputValue.value = '';
-        audioContents.value.push(res.Data.audio);
+        chatContents.value.push({ audio: res.Data.audio, text: res.Data.text } );
         // model.value?.pixiModel?.motion('Idle', 0, undefined, res.Data.audio);
     } finally {
         uiState.sending = false;
     }
 }
 
-// 请求解密图片
 const fetchChat = async ({ text } : {text: string}) => {
     const param = {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -155,6 +160,7 @@ onMounted(async () => {
         opacity: 0.7;
         transition: 0.2s;
         color: #2c3e50;
+        overflow: hidden;
 
         .p{
             position: relative;
