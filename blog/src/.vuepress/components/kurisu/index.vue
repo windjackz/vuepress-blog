@@ -4,6 +4,7 @@
         <div v-if="uiState.loadingProgress" class="loading-status" :class="{ 'error-tips' : uiState.loadingProgress.indexOf('error') >= 0 }">
             {{ uiState.loadingProgress }}
         </div>
+        <div v-if="uiState.chatContentHeight" class="chat-panel-mask" @click="onMaskClick"></div>
         <div class="chat-panel">
             <van-icon v-if="chatContents.length" class="message" size="30px" name="chat" :badge="chatContents.length" @click="onRead" />
             <div class="chat-content" :style="{ height: `${uiState.chatContentHeight}px` }">
@@ -107,6 +108,10 @@ const onSend = async () => {
     }
 }
 
+const onMaskClick = () => {
+    uiState.chatContentHeight = 0;
+}
+
 const fetchChat = async ({ text } : {text: string}) => {
     const param = {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -143,6 +148,12 @@ onMounted(async () => {
     height: 0;
     padding-bottom: 100%;
     margin: 0 auto;
+
+    .chat-panel-mask {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
 
     .chat-panel {
         position: absolute;
