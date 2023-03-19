@@ -26,6 +26,12 @@ const Kurisu = defineAsyncComponent(() => import('@Kurisu'))
 
 ## 修改日志
 
+### 0.5.0 (2023-03-19)
+
+### Features
+
+- **interact:** AI role play kurisu 
+
 ### 0.4.0 (2023-03-17)
 
 ### Features
