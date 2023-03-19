@@ -3,7 +3,7 @@
     <van-popup
         v-model:show="showDrawerValue"
         position="left"
-        :style="{ width: '40%', height: '100%' }"
+        :style="{ width: '35%', height: '100%' }"
         :closeable="true"
         :overlay="false"
         close-icon-position="top-left"
@@ -73,6 +73,7 @@ import { onMounted, ref, computed, onBeforeUnmount, Ref, watch, reactive, define
 import { MotionPriority, MotionState } from 'pixi-live2d-display';
 import { Live2DModel } from '../../framework/live2d/Live2DModel';
 import { ModelEntity } from '../../framework/live2d/ModelEntity';
+import { MotionGroupEntry, motionGroupsRef } from './datas';
 
 const props = defineProps({
     model: ModelEntity,
@@ -90,14 +91,6 @@ const showDrawerValue = computed({
     }
 });
 
-interface MotionGroupEntry {
-    name: string
-    motions: {
-        file: string;
-        error?: any;
-    }[]
-}
-
 interface ExpressionEntry {
     file: string;
     error?: any;
@@ -114,7 +107,6 @@ const uiState = reactive({
 });
 
 const motionState: Ref<MotionState | undefined> = ref();
-const motionGroupsRef: Ref<MotionGroupEntry[]> = ref([]);
 const expressionsRef: Ref<ExpressionEntry[]> = ref([]);
 const currentExpressionIndex = ref(-1);
 const pendingExpressionIndex = ref(-1);
@@ -169,6 +161,7 @@ const expressionLoadError = (index: number, error: any) => {
 };
 
 const startMotion = (motionGroup: MotionGroupEntry, index: number) => {
+    debugger;
     props.model?.pixiModel?.motion(motionGroup.name, index, MotionPriority.FORCE);
 }
 

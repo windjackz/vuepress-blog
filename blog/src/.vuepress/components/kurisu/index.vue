@@ -9,13 +9,13 @@
             <van-icon v-if="chatContents.length" class="message" size="30px" name="chat" :badge="chatContents.length" @click="onRead" />
             <div class="chat-content" :style="{ height: `${uiState.chatContentHeight}px` }">
                 <div class="p">
-                    <VueWriter v-if="uiState.chatContentHeight" :typeSpeed="70" :iterations='1' :array="uiState.text" />
+                    <VueWriter v-if="uiState.chatContentHeight" :typeSpeed="150" :iterations='1' :array="uiState.text" />
                 </div>
             </div>
         </div>
         <div v-if="!uiState.loadingProgress" class="chat-input" :class="{ 'sedding' : uiState.sending }">
             <van-loading class="loading" v-if="uiState.sending" />
-            <input :disabled="uiState.sending" type="text" placeholder="..." v-model="inputValue"/>
+            <input :disabled="uiState.sending" type="text" placeholder="..." v-model="inputValue" maxlength="30"/>
             <van-icon class="send-btn" name="share" size="30px" @click="onSend" />
         </div>
     </div>
@@ -33,6 +33,25 @@ import Live2dSettingButton from './Live2dSettingButton.vue';
 import { ModelEntity } from '../../framework/live2d/ModelEntity';
 import { Kurisu } from './KurisuModel';
 import Live2dDebuggerEditor from './Live2dDebuggerEditor.vue';
+import { motionGroupsRef } from './datas';
+import { MotionPriority } from 'pixi-live2d-display';
+import { showNotify } from 'vant';
+
+interface ChatResponse {
+    audio: string;
+    commands: Array<{
+        commands: { action: string; }
+    }>;
+    emotions: {
+        emotions: {
+            "喜悦": string;
+            "愤怒": string;
+            "傲娇": string;
+            "悲伤": string;
+        }
+    };
+    text: string;
+}
 
 const apiDomain = 'https://19hevguuz2.execute-api.ap-northeast-1.amazonaws.com/Prod';
 const API = {
@@ -52,7 +71,7 @@ const inputValue = ref('今日はいい天気ですね。');
 
 const model: Ref<ModelEntity | undefined> = ref();
     
-const chatContents: Ref<{ audio: string, text: string}[]> = ref([]);
+const chatContents: Ref<ChatResponse[]> = ref([]);
 
 let app: App;
 
@@ -80,13 +99,88 @@ const watchModel = (model: ModelEntity) => {
     });
 }
 
+const parseEmotion = (chatContent: ChatResponse) => {
+    if (chatContent.emotions) {
+        let emotionKey = '';
+        const sortedEmotion = [{
+            param: [{
+                key: 'm09',
+                value: 5,
+            }],
+            value: Number(chatContent.emotions.emotions.傲娇.charAt(0)) || 0
+        },
+        {
+            param: [{
+                key: 'm01',
+                value: 3,
+            },
+            {
+                key: 'm06',
+                value: 5,
+            }],
+            value: Number(chatContent.emotions.emotions.喜悦.charAt(0)) || 0
+        },
+        {
+            param: [{
+                key: 'm10',
+                value: 5,
+            }],
+            value: Number(chatContent.emotions.emotions.悲伤.charAt(0)) || 0
+        },
+        {
+            param: [{
+                key: 'm04',
+                value: 5,
+            }],
+            value: Number(chatContent.emotions.emotions.愤怒.charAt(0)) || 0
+        }
+        ];
+        sortedEmotion.sort((a, b) => (b.value - a.value));
+        const emotions = sortedEmotion[0];
+        emotionKey = emotions.param[0].key;
+        if (emotions.param.length > 1) {
+            emotionKey = emotions.param.find((item) => item.value >= emotions.value)?.key || '';
+        }
+        // 找出key对应的index
+        const group = motionGroupsRef.value.find((item) => item.name === 'Idle');
+        if (group) {
+            return group.motions.findIndex((item) => item.file.lastIndexOf(emotionKey) >= 0);
+        }
+    }
+    return 0;
+}
+
+const handleCommands = (chatContent: ChatResponse) => {
+    chatContent.commands.forEach((item) => {
+        switch (item.commands.action) {
+            case 'backToHome':
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 5000);
+                break;
+            case 'openDebuggerPanel':
+                setTimeout(() => {
+                    uiState.showDrawer = true;
+                }, 3000);
+                break;
+
+        }
+    });
+}
+
 const onRead = () => {
     if (chatContents.value.length) {
         const chatContent = chatContents.value.shift();
         uiState.chatContentHeight = 100;
         if (chatContent) {
-            model.value?.pixiModel?.motion('Idle', 0, undefined, chatContent.audio);
+            // 解析情绪
+            let motionIndex = parseEmotion(chatContent);
+            motionIndex = Math.max(0, motionIndex);
+            // m05 高兴  m09 傲娇 m10 悲伤 m04 愤怒
+            model.value?.pixiModel?.motion('Idle', motionIndex, MotionPriority.FORCE, chatContent.audio);
             uiState.text = [chatContent.text];
+            // 处理动作
+            handleCommands(chatContent);
         }
     }
 } 
@@ -101,9 +195,15 @@ const onSend = async () => {
             text: inputValue.value.trim()
         });
         // inputValue.value = '';
-        chatContents.value.push({ audio: res.Data.audio, text: res.Data.text } );
+        chatContents.value.push(Object.assign({}, res.Data));
         // model.value?.pixiModel?.motion('Idle', 0, undefined, res.Data.audio);
-    } finally {
+    } catch (err) {
+        showNotify({
+            type: 'warning',
+            message: err.message,
+        });
+    }
+    finally {
         uiState.sending = false;
     }
 }
@@ -112,7 +212,9 @@ const onMaskClick = () => {
     uiState.chatContentHeight = 0;
 }
 
-const fetchChat = async ({ text } : {text: string}) => {
+const fetchChat = async ({ text }: { text: string }): Promise<{
+    Data: ChatResponse
+}> => {
     const param = {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         headers: {
@@ -120,11 +222,21 @@ const fetchChat = async ({ text } : {text: string}) => {
             // 'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: JSON.stringify({
-            text,
+            text: [{
+                role: 'user',
+                content: text,
+            }],
         }) // body data type must match "Content-Type" header
     };
     const res = await fetch(API.chat, param);
-    return res.json();
+    const resObj = await res.json();
+    if (resObj.Data?.emotions) {
+        resObj.Data.emotions = JSON.parse(resObj.Data.emotions);
+    }
+    if (resObj.Data?.commands?.length) {
+        resObj.Data.commands = resObj.Data.commands.map((item => JSON.parse(item)));
+    }
+    return resObj;
 }
 
 
@@ -142,12 +254,23 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .canvas-container {
-    display: flex;
-    position: relative;
-    width: 80%;
-    height: 0;
+    /* display: flex;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
     padding-bottom: 100%;
+    margin: 0 auto; */
+    display: flex;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    // padding-bottom: 100%;
     margin: 0 auto;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 200;
 
     .chat-panel-mask {
         position: absolute;
