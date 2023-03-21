@@ -161,7 +161,6 @@ const expressionLoadError = (index: number, error: any) => {
 };
 
 const startMotion = (motionGroup: MotionGroupEntry, index: number) => {
-    debugger;
     props.model?.pixiModel?.motion(motionGroup.name, index, MotionPriority.FORCE);
 }
 

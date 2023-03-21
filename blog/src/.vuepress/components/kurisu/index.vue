@@ -13,11 +13,24 @@
                 </div>
             </div>
         </div>
-        <div v-if="!uiState.loadingProgress" class="chat-input" :class="{ 'sedding' : uiState.sending }">
+        <div v-if="!uiState.loadingProgress" class="chat-input" :class="{ 'sedding' : uiState.sending, 'disabled': !!chatContents.length }">
             <van-loading class="loading" v-if="uiState.sending" />
-            <input :disabled="uiState.sending" type="text" placeholder="..." v-model="inputValue" maxlength="30"/>
+            <input :disabled="uiState.sending || !!chatContents.length" type="text" placeholder="..." v-model="inputValue" maxlength="30"/>
             <van-icon class="send-btn" name="share" size="30px" @click="onSend" />
         </div>
+    </div>
+    <div  style="position: fixed; z-index: 0; top: 0; left: 0; right: 0; visibility: hidden;">
+        <audio
+            id="talking-audio"
+            :src="audioData"
+            preload="metadata"
+            controls
+            @error="onTalkingAudioError"
+            @play="onTalkingAudioPlay"
+            @pause="onTalkingAudioPause"
+            @ended="onTalkingAudioEnd"
+            ref="audioRef"
+        />
     </div>
     <Live2dDebuggerEditor v-model:show-drawer="uiState.showDrawer" :model="model" />
     <Live2dSettingButton @click="uiState.showDrawer = !uiState.showDrawer" />
@@ -31,27 +44,14 @@ import App from './App';
 import { Live2DModel } from '../../framework/live2d/Live2DModel';
 import Live2dSettingButton from './Live2dSettingButton.vue';
 import { ModelEntity } from '../../framework/live2d/ModelEntity';
-import { Kurisu } from './KurisuModel';
+import { Kurisu, parseLive2dEmotion } from './KurisuModel';
+import { Kurisu as PICKurisu, parsePICdEmotion } from './PICKurisu';
 import Live2dDebuggerEditor from './Live2dDebuggerEditor.vue';
-import { motionGroupsRef } from './datas';
 import { MotionPriority } from 'pixi-live2d-display';
 import { showNotify } from 'vant';
-
-interface ChatResponse {
-    audio: string;
-    commands: Array<{
-        commands: { action: string; }
-    }>;
-    emotions: {
-        emotions: {
-            "喜悦": string;
-            "愤怒": string;
-            "傲娇": string;
-            "悲伤": string;
-        }
-    };
-    text: string;
-}
+import { Point } from 'pixi.js';
+import { ChatResponse } from './interfaces';
+import { initChat } from './datas';
 
 const apiDomain = 'https://19hevguuz2.execute-api.ap-northeast-1.amazonaws.com/Prod';
 const API = {
@@ -68,16 +68,88 @@ const uiState = reactive({
 });
 
 const inputValue = ref('今日はいい天気ですね。');
-
+const audioData = ref('');
 const model: Ref<ModelEntity | undefined> = ref();
+const picModel: Ref<PICKurisu | undefined> = ref();
     
 const chatContents: Ref<ChatResponse[]> = ref([]);
+
+const audioRef = ref<HTMLAudioElement>();
 
 let app: App;
 
 const initModel = async () => {
     model.value = new Kurisu();
     watchModel(model.value);
+}
+
+const initPicModel = async () => {
+    const model = new PICKurisu(app.app);
+    const root = await model.load();
+    app?.container.addChild(root);
+    model.play('sided_pleasant', false);
+    root.x = 0;
+    root.y = 600;
+    root.scale = new Point(1.06, 1.06);
+    picModel.value = model;
+}
+
+const initAudio = () => {
+    audioRef.value?.addEventListener("loadstart", () => {
+        console.log("loadstart");
+    });
+    audioRef.value?.addEventListener("durationchange", () => {
+        console.log("durationchange");
+    });
+    audioRef.value?.addEventListener("loadeddata", () => {
+        console.log("loadeddata");
+    });
+    audioRef.value?.addEventListener("progress", () => {
+        console.log("progress");
+    });
+    audioRef.value?.addEventListener("canplay", async () => {
+        console.log("canplay");
+        await audioRef.value?.play();
+    });
+    audioRef.value?.addEventListener("canplaythrough", () => {
+        console.log("canplaythrough");
+    }, {
+        once: true
+    });
+    audioRef.value?.addEventListener("stalled", () => {
+        showNotify({
+            type: 'warning',
+            message: "stalled",
+        });
+    });
+    audioRef.value?.addEventListener("suspend", () => {
+        console.log("suspend");
+    });
+    audioRef.value?.addEventListener("play", () => {
+        if (picModel.value) {
+            picModel.value.play(undefined, true);
+        }
+    });
+    audioRef.value?.addEventListener("ended", () => {
+        console.log("ended");
+        if (picModel.value) {
+            picModel.value.stop();
+        }
+    });
+    const chat = initChat[Math.floor(Math.random() * initChat.length)];
+    chatContents.value.push({
+        text: chat.text,
+        audio: chat.audio,
+        commands: [],
+        emotions: {
+            emotions: {
+                '喜悦': '1',
+                '傲娇': '0',
+                '悲伤': '0',
+                '愤怒': '0', 
+            }
+        }
+    });
 }
 
 const watchModel = (model: ModelEntity) => {
@@ -97,57 +169,6 @@ const watchModel = (model: ModelEntity) => {
     model.on('modelLoadedError', (e: any) => {
         uiState.loadingProgress = e.message || ''
     });
-}
-
-const parseEmotion = (chatContent: ChatResponse) => {
-    if (chatContent.emotions) {
-        let emotionKey = '';
-        const sortedEmotion = [{
-            param: [{
-                key: 'm09',
-                value: 5,
-            }],
-            value: Number(chatContent.emotions.emotions.傲娇.charAt(0)) || 0
-        },
-        {
-            param: [{
-                key: 'm01',
-                value: 3,
-            },
-            {
-                key: 'm06',
-                value: 5,
-            }],
-            value: Number(chatContent.emotions.emotions.喜悦.charAt(0)) || 0
-        },
-        {
-            param: [{
-                key: 'm10',
-                value: 5,
-            }],
-            value: Number(chatContent.emotions.emotions.悲伤.charAt(0)) || 0
-        },
-        {
-            param: [{
-                key: 'm04',
-                value: 5,
-            }],
-            value: Number(chatContent.emotions.emotions.愤怒.charAt(0)) || 0
-        }
-        ];
-        sortedEmotion.sort((a, b) => (b.value - a.value));
-        const emotions = sortedEmotion[0];
-        emotionKey = emotions.param[0].key;
-        if (emotions.param.length > 1) {
-            emotionKey = emotions.param.find((item) => item.value >= emotions.value)?.key || '';
-        }
-        // 找出key对应的index
-        const group = motionGroupsRef.value.find((item) => item.name === 'Idle');
-        if (group) {
-            return group.motions.findIndex((item) => item.file.lastIndexOf(emotionKey) >= 0);
-        }
-    }
-    return 0;
 }
 
 const handleCommands = (chatContent: ChatResponse) => {
@@ -171,13 +192,23 @@ const handleCommands = (chatContent: ChatResponse) => {
 const onRead = () => {
     if (chatContents.value.length) {
         const chatContent = chatContents.value.shift();
-        uiState.chatContentHeight = 100;
+        uiState.chatContentHeight = chatContent?.text ? 100 : 0;
+        audioData.value = '';
         if (chatContent) {
-            // 解析情绪
-            let motionIndex = parseEmotion(chatContent);
-            motionIndex = Math.max(0, motionIndex);
-            // m05 高兴  m09 傲娇 m10 悲伤 m04 愤怒
-            model.value?.pixiModel?.motion('Idle', motionIndex, MotionPriority.FORCE, chatContent.audio);
+            if (model.value) {
+                // 解析情绪
+                let motionIndex = parseLive2dEmotion(chatContent);
+                motionIndex = Math.max(0, motionIndex);
+                // m05 高兴  m09 傲娇 m10 悲伤 m04 愤怒
+                model.value?.pixiModel?.motion('Idle', motionIndex, MotionPriority.FORCE, chatContent.audio);
+            } else if (picModel.value) {
+                // 解析情绪
+                const emotionKey = parsePICdEmotion(chatContent);
+                // 播放语音
+                audioData.value = chatContent.audio || '';
+                // 播放动画
+                picModel.value.play(emotionKey);
+            }
             uiState.text = [chatContent.text];
             // 处理动作
             handleCommands(chatContent);
@@ -239,6 +270,22 @@ const fetchChat = async ({ text }: { text: string }): Promise<{
     return resObj;
 }
 
+const onTalkingAudioError = (error) => {
+    console.error(error);
+}
+
+const onTalkingAudioPlay = () => {
+
+}
+
+const onTalkingAudioPause = () => {
+
+}
+
+const onTalkingAudioEnd = () => {
+
+}
+
 
 const initApp = () => {
     app = new App('canvas');
@@ -247,7 +294,9 @@ const initApp = () => {
 
 onMounted(async () => {
     initApp();
-    initModel();
+    await initPicModel();
+    initAudio();
+    // initModel();
 });
 
 </script>
@@ -358,6 +407,11 @@ onMounted(async () => {
         .send-btn {
             color: darkgrey;
         }
+    }
+
+    .chat-input.disabled {
+        opacity: 0.4;
+        pointer-events: none;
     }
 }
 #canvas {
