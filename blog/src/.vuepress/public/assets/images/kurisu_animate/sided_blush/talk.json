@@ -1,0 +1,42 @@
+{"frames": {
+
+"kurisu_sided_blush1.png":
+{
+	"frame": {"x":1,"y":1,"w":606,"h":1080},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":606,"h":1080},
+	"sourceSize": {"w":606,"h":1080},
+	"anchor": {"x":0.5,"y":1}
+},
+"kurisu_sided_blush2.png":
+{
+	"frame": {"x":1,"y":1083,"w":606,"h":1080},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":606,"h":1080},
+	"sourceSize": {"w":606,"h":1080},
+	"anchor": {"x":0.5,"y":1}
+},
+"kurisu_sided_blush3.png":
+{
+	"frame": {"x":609,"y":1,"w":606,"h":1080},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":606,"h":1080},
+	"sourceSize": {"w":606,"h":1080},
+	"anchor": {"x":0.5,"y":1}
+}},
+"animations": {
+	"kurisu_sided_blush": ["kurisu_sided_blush1.png","kurisu_sided_blush2.png","kurisu_sided_blush3.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "talk.png",
+	"format": "RGBA8888",
+	"size": {"w":1216,"h":1690},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:f7e6e503fe0d9034fcf4ed0608c83b45:b88e7e6018afeef76cf8209fc4d0122a:3d1dc7bdd145e1c49986d2b2962683fc$"
+}
+}

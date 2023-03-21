@@ -1,0 +1,42 @@
+{"frames": {
+
+"kurisu_sided_pleasant1.png":
+{
+	"frame": {"x":1,"y":1,"w":606,"h":1080},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":606,"h":1080},
+	"sourceSize": {"w":606,"h":1080},
+	"anchor": {"x":0.5,"y":1}
+},
+"kurisu_sided_pleasant2.png":
+{
+	"frame": {"x":1,"y":1083,"w":606,"h":1080},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":606,"h":1080},
+	"sourceSize": {"w":606,"h":1080},
+	"anchor": {"x":0.5,"y":1}
+},
+"kurisu_sided_pleasant3.png":
+{
+	"frame": {"x":609,"y":1,"w":606,"h":1080},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":606,"h":1080},
+	"sourceSize": {"w":606,"h":1080},
+	"anchor": {"x":0.5,"y":1}
+}},
+"animations": {
+	"kurisu_sided_pleasant": ["kurisu_sided_pleasant1.png","kurisu_sided_pleasant2.png","kurisu_sided_pleasant3.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "talk.png",
+	"format": "RGBA8888",
+	"size": {"w":1216,"h":1690},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:865201d8b557be81ef4a4b14eccd2d16:48cd367bddb5accbcbcfaf412fdf9f12:3d1dc7bdd145e1c49986d2b2962683fc$"
+}
+}

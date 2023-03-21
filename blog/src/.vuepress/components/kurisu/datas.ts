@@ -8,3 +8,10 @@ export interface MotionGroupEntry {
     }[]
 }
 export const motionGroupsRef: Ref<MotionGroupEntry[]> = ref([]);
+
+export const initChat = [
+    {
+        audio: '/assets/sounds/kurisu/hello.wav',
+        text: 'Hello~'
+    }
+];
