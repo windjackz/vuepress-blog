@@ -59,7 +59,7 @@ export class Kurisu {
         }
     }
 
-    play(emotion?: 'happy' | 'sided_pleasant' | 'sided_blush' | 'sad' | 'sided_angle', talk = false) {
+    play(emotion?: PICModelEmotion, talk = false) {
         if (emotion) {
             this.curEmotion = emotion;
         }
@@ -118,7 +118,7 @@ export const parsePICdEmotion = (chatContent: ChatResponse) => {
         },
         {
             param: [{
-                key: 'sided_angle',
+                key: 'sided_angry',
                 value: 5,
             }],
             value: Number(chatContent.emotions.emotions.愤怒.charAt(0)) || 0

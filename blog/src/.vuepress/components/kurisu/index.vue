@@ -98,8 +98,12 @@ const initAudio = () => {
     audioRef.value?.addEventListener("loadstart", () => {
         console.log("loadstart");
     });
-    audioRef.value?.addEventListener("durationchange", () => {
+    audioRef.value?.addEventListener("durationchange",async () => {
         console.log("durationchange");
+        console.log(audioRef.value?.paused);
+        if (audioRef.value?.paused) {
+            await audioRef.value?.play();
+        }
     });
     audioRef.value?.addEventListener("loadeddata", () => {
         console.log("loadeddata");
@@ -109,7 +113,6 @@ const initAudio = () => {
     });
     audioRef.value?.addEventListener("canplay", async () => {
         console.log("canplay");
-        await audioRef.value?.play();
     });
     audioRef.value?.addEventListener("canplaythrough", () => {
         console.log("canplaythrough");
@@ -204,10 +207,12 @@ const onRead = () => {
             } else if (picModel.value) {
                 // 解析情绪
                 const emotionKey = parsePICdEmotion(chatContent);
+                 // 播放动画
+                 picModel.value.play(emotionKey);
                 // 播放语音
                 audioData.value = chatContent.audio || '';
-                // 播放动画
-                picModel.value.play(emotionKey);
+                audioRef.value!.preload = 'metadata';
+               
             }
             uiState.text = [chatContent.text];
             // 处理动作
