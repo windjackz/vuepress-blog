@@ -12,4 +12,19 @@ export interface ChatResponse {
         }
     };
     text: string;
+    tranlateText: string;
+}
+
+export interface UnknownMsg {
+    cmd: string;
+    content: string;
+}
+  
+
+export interface MotionGroupEntry {
+    name: string
+    motions: {
+        file: string;
+        error?: any;
+    }[]
 }

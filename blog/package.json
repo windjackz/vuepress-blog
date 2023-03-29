@@ -19,9 +19,11 @@
   },
   "dependencies": {
     "@vant/touch-emulator": "^1.4.0",
+    "blive-message-listener": "^0.4.4",
     "compressorjs": "^1.1.1",
     "pixi-live2d-display": "git+https://github.com/windjackz/pixi-live2d-display.git#release/20230227_1",
     "pixi.js": "^6.1.0",
+    "resize-observer-polyfill": "^1.5.1",
     "vant": "^4.0.7"
   }
 }

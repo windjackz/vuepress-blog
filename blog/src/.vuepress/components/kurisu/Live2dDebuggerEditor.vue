@@ -73,7 +73,8 @@ import { onMounted, ref, computed, onBeforeUnmount, Ref, watch, reactive, define
 import { MotionPriority, MotionState } from 'pixi-live2d-display';
 import { Live2DModel } from '../../framework/live2d/Live2DModel';
 import { ModelEntity } from '../../framework/live2d/ModelEntity';
-import { MotionGroupEntry, motionGroupsRef } from './datas';
+import { motionGroupsRef } from './datas';
+import { MotionGroupEntry } from './interfaces';
 
 const props = defineProps({
     model: ModelEntity,

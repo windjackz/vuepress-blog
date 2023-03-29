@@ -1,13 +1,16 @@
 import { Application, AnimatedSprite, Container } from 'pixi.js';
 import { Loader } from 'pixi.js';
+import { EventEmitter } from '@pixi/utils';
 import { ChatResponse } from './interfaces';
 
 export type PICModelEmotion = 'happy' | 'sided_pleasant' | 'sided_blush' | 'sad' | 'sided_angle';
 
-export class Kurisu {
+export class Kurisu extends EventEmitter {
     private animationDict: Map<string, AnimatedSprite> = new Map();
     private animations: AnimatedSprite[]  = [];
-    constructor(readonly app: Application) { }
+    constructor(readonly app: Application) { 
+        super();
+    }
     private container = new Container();
     private curAnimation: AnimatedSprite | undefined;
     private curEmotion = 'sided_pleasant';
@@ -24,6 +27,9 @@ export class Kurisu {
         ];
         for (let i = 0; i < assets.length; i += 1) {
             await this.loadAsset(assets[i]);
+            this.emit('loadingProgress', assets.map((item) => {
+                `item.replace('/assets/images/kurisu_animate/', '').replace('/talk.json', '') [X]`;
+            }));
         }
         return this.container;
     }
@@ -56,6 +62,7 @@ export class Kurisu {
     stop() {
         if (this.curAnimation) {
             this.curAnimation.gotoAndStop(0);
+            this.emit('onIdle');
         }
     }
 
@@ -81,8 +88,10 @@ export class Kurisu {
             if (talk) {
                 targetAnimation.animationSpeed = 1/6; 
                 targetAnimation?.play();
+                this.emit('onTalking');
             } else {
                 targetAnimation.gotoAndStop(0);
+                this.emit('onIdle');
             }
         }
     }
@@ -96,7 +105,7 @@ export const parsePICdEmotion = (chatContent: ChatResponse) => {
                 key: 'sided_blush',
                 value: 5,
             }],
-            value: Number(chatContent.emotions.emotions.傲娇.charAt(0)) || 0
+            value: Number(String(chatContent.emotions.emotions.傲娇).charAt(0)) || 0
         },
         {
             param: [{
@@ -107,21 +116,21 @@ export const parsePICdEmotion = (chatContent: ChatResponse) => {
                 key: 'happy',
                 value: 5,
             }],
-            value: Number(chatContent.emotions.emotions.喜悦.charAt(0)) || 0
+            value: Number(String(chatContent.emotions.emotions.喜悦).charAt(0)) || 0
         },
         {
             param: [{
                 key: 'sad',
                 value: 5,
             }],
-            value: Number(chatContent.emotions.emotions.悲伤.charAt(0)) || 0
+            value: Number(String(chatContent.emotions.emotions.悲伤).charAt(0)) || 0
         },
         {
             param: [{
                 key: 'sided_angry',
                 value: 5,
             }],
-            value: Number(chatContent.emotions.emotions.愤怒.charAt(0)) || 0
+            value: Number(String(chatContent.emotions.emotions.愤怒).charAt(0)) || 0
         }
         ];
         sortedEmotion.sort((a, b) => (b.value - a.value));

@@ -1,12 +1,6 @@
 import { onMounted, ref, Ref, reactive } from 'vue';
+import { MotionGroupEntry } from './interfaces';
 
-export interface MotionGroupEntry {
-    name: string
-    motions: {
-        file: string;
-        error?: any;
-    }[]
-}
 export const motionGroupsRef: Ref<MotionGroupEntry[]> = ref([]);
 
 export const initChat = [

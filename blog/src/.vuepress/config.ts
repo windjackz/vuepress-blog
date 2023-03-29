@@ -1,4 +1,5 @@
 import { defineUserConfig } from "vuepress";
+import { viteBundler } from '@vuepress/bundler-vite'
 import { searchPlugin } from "@vuepress/plugin-search";
 import { getDirname, path } from "@vuepress/utils";
 import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics'
@@ -48,4 +49,12 @@ export default defineUserConfig({
     "@ThemeYourName": path.resolve(__dirname, "components/theme/yourname.vue"),
     "@Kurisu": path.resolve(__dirname, "components/kurisu/index.vue"),
   },
+
+  bundler: viteBundler({
+    viteOptions: {
+      optimizeDeps: {
+        exclude: ["fsevents"],
+      }
+    },
+  }),
 });
