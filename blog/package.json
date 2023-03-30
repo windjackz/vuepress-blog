@@ -13,6 +13,7 @@
     "@vuepress/client": "2.0.0-beta.60",
     "@vuepress/plugin-google-analytics": "^2.0.0-beta.60",
     "@vuepress/plugin-search": "^2.0.0-beta.60",
+    "vscode-languageserver-types": "^3.17.2",
     "vue": "^3.2.45",
     "vuepress": "2.0.0-beta.60",
     "vuepress-theme-hope": "2.0.0-beta.168"
@@ -20,8 +21,12 @@
   "dependencies": {
     "@vant/touch-emulator": "^1.4.0",
     "compressorjs": "^1.1.1",
+    "monaco-editor": "^0.34.1",
+    "monaco-languageclient": "^4.0.3",
     "pixi-live2d-display": "git+https://github.com/windjackz/pixi-live2d-display.git#release/20230227_1",
     "pixi.js": "^6.1.0",
-    "vant": "^4.0.7"
+    "vant": "^4.0.7",
+    "vscode-ws-jsonrpc": "^3.0.0-next.1",
+    "vscode": "npm:@codingame/monaco-vscode-api@~1.69.18"
   }
 }
