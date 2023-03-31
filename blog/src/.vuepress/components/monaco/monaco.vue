@@ -3,12 +3,35 @@
 </template>
 
 <script setup lang="ts">
+import 'monaco-editor/esm/vs/editor/editor.all.js';
+// support all editor features
+import 'monaco-editor/esm/vs/editor/standalone/browser/accessibilityHelp/accessibilityHelp.js';
+import 'monaco-editor/esm/vs/editor/standalone/browser/inspectTokens/inspectTokens.js';
+import 'monaco-editor/esm/vs/editor/standalone/browser/iPadShowKeyboard/iPadShowKeyboard.js';
+import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneHelpQuickAccess.js';
+import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoLineQuickAccess.js';
+import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneGotoSymbolQuickAccess.js';
+import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js';
+import 'monaco-editor/esm/vs/editor/standalone/browser/quickInput/standaloneQuickInputService.js';
+import 'monaco-editor/esm/vs/editor/standalone/browser/referenceSearch/standaloneReferenceSearch.js';
+import 'monaco-editor/esm/vs/editor/standalone/browser/toggleHighContrast/toggleHighContrast.js';
+
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+
+import { StandaloneServices } from 'vscode/services';
+import getNotificationServiceOverride from 'vscode/service-override/notifications';
+import getDialogServiceOverride from 'vscode/service-override/dialogs';
+
 import { onMounted, ref, Ref, reactive } from 'vue';
 import { MonacoLanguageClient, MonacoServices } from 'monaco-languageclient';
 import { CloseAction, ErrorAction, MessageTransports } from 'vscode-languageclient';
 import normalizeUrl from 'normalize-url';
 import { toSocket, WebSocketMessageReader, WebSocketMessageWriter } from 'vscode-ws-jsonrpc';
+
+StandaloneServices.initialize({
+    ...getNotificationServiceOverride(document.body),
+    ...getDialogServiceOverride()
+});
 
 const apiDomain = 'https://19hevguuz2.execute-api.ap-northeast-1.amazonaws.com/Prod';
 const API = {
@@ -61,9 +84,12 @@ const createLanguageClient = (transports: MessageTransports): MonacoLanguageClie
 }
 
 const registerEditor = () => {
-    const hostname = '9.134.3.66';
-    const path = '/python';
-    const port = '2087';
+    const hostname = 'localhost';
+    // const hostname = '9.134.3.66';
+    const path = '/sampleServer';
+    // const path = 'python';
+    const port = '3000';
+    // const port = '2087';
     const url = createUrl(hostname, port, path);
 
     // register Monaco languages
