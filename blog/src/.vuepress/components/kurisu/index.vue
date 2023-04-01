@@ -236,13 +236,16 @@ const onSend = async () => {
     if (!inputValue.value.trim()) {
         return;
     }
+    
     uiState.sending = true;
     try {
+        limit();
         const res = await fetchChat({
             text: inputValue.value.trim()
         });
         // inputValue.value = '';
         chatContents.value.push(Object.assign({}, res.Data));
+        updateLimit();
         // model.value?.pixiModel?.motion('Idle', 0, undefined, res.Data.audio);
     } catch (err) {
         showNotify({
@@ -276,6 +279,9 @@ const fetchChat = async ({ text }: { text: string }): Promise<{
         }) // body data type must match "Content-Type" header
     };
     const res = await fetch(API.chat, param);
+    if ((res as any).status !== 200) {
+            throw new Error('服务器待机啦，请稍后再试');
+    }
     const resObj = await res.json();
     if (resObj.Data?.emotions) {
         resObj.Data.emotions = JSON.parse(resObj.Data.emotions);
@@ -302,6 +308,59 @@ const onTalkingAudioEnd = () => {
 
 }
 
+const limit = () => {
+    const key = formatDate(new Date().getTime(), 'yyyyMMDD');
+    const beanRaw = localStorage.getItem(`kurisu${key}`) || '{}';
+    try {
+        const bean = JSON.parse(beanRaw);
+        if (bean) {
+            if (bean.count >= 5) {
+                throw new Error('今日提问已到达限制次数');
+            }
+        }
+    }
+    catch (err) {
+        if ((err as any).message === '今日提问已到达限制次数') {
+            throw err;
+        }
+        console.error(err);
+    }
+};
+
+const updateLimit = () => {
+    const key = formatDate(new Date().getTime(), 'yyyyMMDD');
+    const beanRaw = localStorage.getItem(`kurisu${key}`) || '{}';
+    try {
+        const bean = JSON.parse(beanRaw);
+        if (bean) {
+            bean.count = (Number(bean.count) || 0) + 1;
+        }
+        localStorage.setItem(`kurisu${key}`, JSON.stringify(bean));
+    }
+    catch (err) {
+        console.error(err);
+    }
+}
+
+const formatDate = (timestamp, format) => {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hour = date.getHours();
+  const minute = date.getMinutes();
+  const second = date.getSeconds();
+  const padZero = (num) => (num < 10 ? `0${num}` : num);
+  const formatObj = {
+    'yyyy': year,
+    'MM': padZero(month),
+    'dd': padZero(day),
+    'HH': padZero(hour),
+    'mm': padZero(minute),
+    'ss': padZero(second),
+  };
+  return format.replace(/yyyy|MM|dd|HH|mm|ss/g, (matched) => formatObj[matched]);
+}
 
 const initApp = () => {
     app = new App('canvas');
