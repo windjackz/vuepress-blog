@@ -1,13 +1,15 @@
 import { Application, AnimatedSprite, Container } from 'pixi.js';
-import { Loader } from 'pixi.js';
+import { EventEmitter } from '@pixi/utils';
 import { ChatResponse } from './interfaces';
 
 export type PICModelEmotion = 'happy' | 'sided_pleasant' | 'sided_blush' | 'sad' | 'sided_angle';
 
-export class Kurisu {
+export class Kurisu extends EventEmitter {
     private animationDict: Map<string, AnimatedSprite> = new Map();
     private animations: AnimatedSprite[]  = [];
-    constructor(readonly app: Application) { }
+    constructor(readonly app: Application) { 
+        super();
+    }
     private container = new Container();
     private curAnimation: AnimatedSprite | undefined;
     private curEmotion = 'sided_pleasant';
@@ -23,8 +25,12 @@ export class Kurisu {
             '/assets/images/kurisu_animate/sided_angry/talk.json'
         ];
         for (let i = 0; i < assets.length; i += 1) {
+            this.emit('loadingProgress', assets.map((item, index) => {
+                return `asset ${index} ${ i > index ? '[complete]' : '[loading]'}`;
+            }).join('\n'))
             await this.loadAsset(assets[i]);
         }
+        this.emit('modelLoaded');
         return this.container;
     }
 
