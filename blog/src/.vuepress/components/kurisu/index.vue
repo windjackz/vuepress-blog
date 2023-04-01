@@ -5,7 +5,7 @@
             {{ uiState.loadingProgress }}
         </div>
         <div v-if="uiState.chatContentHeight" class="chat-panel-mask" @click="onMaskClick"></div>
-        <div class="chat-panel">
+        <div class="chat-panel" v-if="!uiState.loadingProgress">
             <van-icon v-if="chatContents.length" class="message" size="30px" name="chat" :badge="chatContents.length" @click="onRead" />
             <div class="chat-content" :style="{ height: `${uiState.chatContentHeight}px` }">
                 <div class="p">
@@ -60,6 +60,7 @@ const API = {
 
 
 const uiState = reactive({
+    inited: false,
     showDrawer: false,
     loadingProgress: '',
     sending: false,
@@ -85,6 +86,7 @@ const initModel = async () => {
 
 const initPicModel = async () => {
     const model = new PICKurisu(app.app);
+    watchPICModel(model);
     const root = await model.load();
     app?.container.addChild(root);
     model.play('sided_pleasant', false);
@@ -171,6 +173,15 @@ const watchModel = (model: ModelEntity) => {
     });
     model.on('modelLoadedError', (e: any) => {
         uiState.loadingProgress = e.message || ''
+    });
+}
+
+const watchPICModel = (model: PICKurisu) => {
+    model.on('modelLoaded', (pixiModel: Live2DModel) => {
+        uiState.loadingProgress = '';
+    });
+    model.on('loadingProgress', (progress: string) => {
+        uiState.loadingProgress = progress;
     });
 }
 
