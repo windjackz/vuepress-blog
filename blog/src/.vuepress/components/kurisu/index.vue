@@ -309,7 +309,7 @@ const onTalkingAudioEnd = () => {
 }
 
 const limit = () => {
-    const key = formatDate(new Date().getTime(), 'yyyyMMDD');
+    const key = formatDate(new Date().getTime(), 'yyyyMMdd');
     const beanRaw = localStorage.getItem(`kurisu${key}`) || '{}';
     try {
         const bean = JSON.parse(beanRaw);
@@ -328,7 +328,7 @@ const limit = () => {
 };
 
 const updateLimit = () => {
-    const key = formatDate(new Date().getTime(), 'yyyyMMDD');
+    const key = formatDate(new Date().getTime(), 'yyyyMMdd');
     const beanRaw = localStorage.getItem(`kurisu${key}`) || '{}';
     try {
         const bean = JSON.parse(beanRaw);
