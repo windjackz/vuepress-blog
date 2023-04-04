@@ -1,7 +1,7 @@
 export interface ChatResponse {
     audio: string;
     commands: Array<{
-        commands: { action: string; }
+        commands: { action: string; data: any }
     }>;
     emotions: {
         emotions: {
