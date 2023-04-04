@@ -2,7 +2,7 @@ import { Application, AnimatedSprite, Container } from 'pixi.js';
 import { EventEmitter } from '@pixi/utils';
 import { ChatResponse } from './interfaces';
 
-export type PICModelEmotion = 'happy' | 'sided_pleasant' | 'sided_blush' | 'sad' | 'sided_angle';
+export type PICModelEmotion = 'happy' | 'sided_pleasant' | 'sided_blush' | 'sad' | 'sided_angle' | 'sided_eyes_closed';
 
 export class Kurisu extends EventEmitter {
     private animationDict: Map<string, AnimatedSprite> = new Map();
@@ -22,7 +22,8 @@ export class Kurisu extends EventEmitter {
             '/assets/images/kurisu_animate/sided_pleasant/talk.json',
             '/assets/images/kurisu_animate/sided_blush/talk.json',
             '/assets/images/kurisu_animate/sad/talk.json',
-            '/assets/images/kurisu_animate/sided_angry/talk.json'
+            '/assets/images/kurisu_animate/sided_angry/talk.json',
+            '/assets/images/kurisu_animate/sided_eyes_closed/talk.json'
         ];
         for (let i = 0; i < assets.length; i += 1) {
             this.emit('loadingProgress', assets.map((item, index) => {
@@ -63,6 +64,10 @@ export class Kurisu extends EventEmitter {
         if (this.curAnimation) {
             this.curAnimation.gotoAndStop(0);
         }
+    }
+
+    sign() {
+        this.play('sided_eyes_closed', true);
     }
 
     play(emotion?: PICModelEmotion, talk = false) {

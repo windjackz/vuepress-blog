@@ -32,13 +32,48 @@
             ref="audioRef"
         />
     </div>
+    <div class="sing-svg" v-if="uiState.singing">
+        <svg width="350px" height="200px" viewBox="0 0 300 140" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g id="leavesFall" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g id="notes-copy">
+                <image id="notes-2" x="0" y="0" width="58" height="74" xlink:href="data:image/png;base64,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">
+                <animate attributeName="x" begin="0s" values="277;0" dur="4s" calcMode="spline" keySplines=".42,.51,.62,.93" repeatCount="indefinite"></animate>
+                <animate attributeName="y" begin="0s" values="122;0" dur="4s" calcMode="spline" keySplines=".42,.51,.62,.93" repeatCount="indefinite"></animate>         
+                <animate attributeName="opacity" begin="0s" values="0;1;1;1;0.5;0" dur="4s" repeatCount="indefinite"></animate>
+                <animate attributeName="width" begin="0s" values="30;58" dur="4s" calcMode="spline" keySplines=".42,.51,.62,.93" repeatCount="indefinite"></animate>     
+                <animate attributeName="height" begin="0s" values="35;74" dur="4s" calcMode="spline" keySplines=".42,.51,.62,.93" repeatCount="indefinite"></animate>            
+                </image>
+                <image id="notes-4" x="0" y="0" width="19" height="37" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAlCAYAAACgc9J8AAAABGdBTUEAA1teXP8meAAAAu1JREFUSA3llrluE1EUhmf3kniPJSJAciIoUAAhsYNYBAWvQMdr8AQ01Ei0PABVEBWioaFgkSiQgLAIRRRYsZ3Y8W4P3z+eIJHFYyclR/pzr+/c8+fsM4bxX4g9oZcL3BuCzrj71riH4bOlmZmZa+wLUXcjyfL5fNqyLDMWi52IIot00/d9p9lsLg4GgxxkK2BPVyMta7fbqxAMgAlOgj0lkgzNPvgRMshVJ9zvWCYhMxKJxLdQMzE7O3t8B0t4MBFZq9X65bpuGx2r0WicORAZysNer/dJZGT1MGtxN8KJLAsVP2rtdDoW5XL2oGQbnuf9dBzHrlQqyqq3nXAaywzTND/0+32VSBycOhAZLn4lEXVIbGJ3YTtZZAdsU/CHw2Gc9lpkzdIdX3i+sXVnKjelNDc39x4iKx6PS/fiFpHWaS0z6NMuU2Se9RD6KpHXQF1iTG2ZlGh6EUhiWHhutN0nGc3/PZVKlSGxsPIyqzI8vZtSknS7XYVoic5IFwqFFdyu7MtNkZVKpTfiJBl2uVy+rrOpEyAlSa1WU9DzlMkCLs9Tg6/2S5aC6Aho0F7nmSqacc0gcGwmklwud7per9+hWEtk1MpkMqYan4QoXOVJyXT5LrgJTArXh4CtYTLf5J2ZTCZHKdVphNzj+Q3gM35E4JNNGWLZtq26M+nZWmQ2Ce5VlG6zKi4upeBCpL3DSLLlrkiz2exKVAKSjJz7xCgeWuKovoidSEyIA+tEzHvi6Z5vGi5Ibmk6jLbB50EQ42q1qiPp+kCWVdfW1t5FkemzwA2VfN5MQbz4bSiTlIVP5YvsBeXRi4rZMYYgofG8dDrtEninWCy6nDnr6+sOGfXIYh2iZ/oHYy2DgGTZNtWuXpRLPq0jV/VFZGKVSaM/Zt8C49uJ4F/R3MI9Gwts3LKUPX1/8NsiAU82Nzefi0gSBHS03fXvJU4fgsAqVlmkfRc8Asvgr0SVxio3P4OjQP34m6J9iWsPsPgtv/+RP9TrGMLr5HW4AAAAAElFTkSuQmCC">
+                <animate attributeName="x" begin="-1.25s" values="277;0" dur="4s" calcMode="spline" keySplines=".42,.51,.62,.93" repeatCount="indefinite"></animate>
+                <animate attributeName="y" begin="-1.25s" values="122;0" dur="4s" calcMode="spline" keySplines=".42,.51,.62,.93" repeatCount="indefinite"></animate>         
+                <animate attributeName="opacity" begin="-1.25s" values="0;1;1;1;0.5;0" dur="4s" repeatCount="indefinite"></animate> 
+                <animate attributeName="width" begin="-1.25s" values="10;19" dur="4s" calcMode="spline" keySplines=".42,.51,.62,.93" repeatCount="indefinite"></animate>     
+                <animate attributeName="height" begin="-1.25s" values="19;37" dur="4s" calcMode="spline" keySplines=".42,.51,.62,.93" repeatCount="indefinite"></animate>      
+                </image>
+                <image id="notes" x="0" y="0" width="59" height="70" xlink:href="data:image/png;base64,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">
+                <animate attributeName="x" begin="-2.75s" values="277;0" dur="4s" calcMode="spline" keySplines=".42,.51,.62,.93" repeatCount="indefinite"></animate>
+                <animate attributeName="y" begin="-2.75s" values="122;0" dur="4s" calcMode="spline" keySplines=".42,.51,.62,.93" repeatCount="indefinite"></animate>         
+                <animate attributeName="opacity" begin="-2.75s" values="0;1;1;1;0.5;0" dur="4s" repeatCount="indefinite"></animate> 
+                <animate attributeName="width" begin="-2.75s" values="30;59" dur="4s" calcMode="spline" keySplines=".42,.51,.62,.93" repeatCount="indefinite"></animate>     
+                <animate attributeName="height" begin="-2.75s" values="35;70" dur="4s" calcMode="spline" keySplines=".42,.51,.62,.93" repeatCount="indefinite"></animate>   
+                </image>
+            </g>
+        </g>
+    </svg>
+    </div>
+    <div class="siri-container-panel" :style="{
+        width: `${uiState.singing ? '90vw' : '0' }`
+    }">
+        <div class="background"></div>
+        <div id="siri-container"></div>
+    </div>
     <Live2dDebuggerEditor v-model:show-drawer="uiState.showDrawer" :model="model" />
     <Live2dSettingButton @click="uiState.showDrawer = !uiState.showDrawer" />
 
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, Ref, reactive } from 'vue';
+import { onMounted, ref, Ref, reactive, watch, nextTick } from 'vue';
 import VueWriter from '../common/vue-writer.vue'
 import App from './App';
 import { Live2DModel } from '../../framework/live2d/Live2DModel';
@@ -52,6 +87,7 @@ import { showNotify } from 'vant';
 import { Point } from 'pixi.js';
 import { ChatResponse } from './interfaces';
 import { initChat } from './datas';
+import SiriWave from "siriwave";
 
 const apiDomain = 'https://19hevguuz2.execute-api.ap-northeast-1.amazonaws.com/Prod';
 const API = {
@@ -64,6 +100,7 @@ const uiState = reactive({
     showDrawer: false,
     loadingProgress: '',
     sending: false,
+    singing: false,
     chatContentHeight: 0,
     text: ['...']
 });
@@ -78,6 +115,7 @@ const chatContents: Ref<ChatResponse[]> = ref([]);
 const audioRef = ref<HTMLAudioElement>();
 
 let app: App;
+let siriWave: SiriWave | undefined;
 
 const initModel = async () => {
     model.value = new Kurisu();
@@ -132,20 +170,28 @@ const initAudio = () => {
     });
     audioRef.value?.addEventListener("play", () => {
         if (picModel.value) {
-            picModel.value.play(undefined, true);
+            if (audioRef.value?.src) {
+                if (audioRef.value!.src.substring(audioRef.value!.src.length - 4) === '.mp3') {
+                    picModel.value.sign();
+                    uiState.singing = true;
+                } else {
+                    picModel.value.play(undefined, true);
+                }
+            }
         }
     });
     audioRef.value?.addEventListener("ended", () => {
         console.log("ended");
         if (picModel.value) {
             picModel.value.stop();
+            uiState.singing = false;
         }
     });
     const chat = initChat[Math.floor(Math.random() * initChat.length)];
     chatContents.value.push({
         text: chat.text,
         audio: chat.audio,
-        commands: [],
+        commands: chat.commands || [],
         emotions: {
             emotions: {
                 '喜悦': '1',
@@ -198,9 +244,19 @@ const handleCommands = (chatContent: ChatResponse) => {
                     uiState.showDrawer = true;
                 }, 3000);
                 break;
+            case 'sign':
+                doSing(item.commands.data);
+                break;
 
         }
     });
+}
+
+const doSing = (songName: string) => {
+    if (songName.indexOf('アマデウス') >= 0 || songName.indexOf('Amadeus') >= 0 ) {
+        audioData.value = 'https://moremoreda-1257923696.file.myqcloud.com/kurisu/song/kurisu_amadeus.mp3';
+        audioRef.value!.preload = 'metadata';
+    }
 }
 
 const onRead = () => {
@@ -223,11 +279,14 @@ const onRead = () => {
                 // 播放语音
                 audioData.value = chatContent.audio || '';
                 audioRef.value!.preload = 'metadata';
-               
+                audioRef.value?.addEventListener("ended", () => {
+                    // 处理动作
+                    handleCommands(chatContent);
+                }, {
+                    once: true,
+                });
             }
             uiState.text = [chatContent.text];
-            // 处理动作
-            handleCommands(chatContent);
         }
     }
 } 
@@ -241,7 +300,8 @@ const onSend = async () => {
     try {
         limit();
         const res = await fetchChat({
-            text: inputValue.value.trim()
+            text: inputValue.value.trim(),
+            debug: true,
         });
         // inputValue.value = '';
         chatContents.value.push(Object.assign({}, res.Data));
@@ -262,7 +322,7 @@ const onMaskClick = () => {
     uiState.chatContentHeight = 0;
 }
 
-const fetchChat = async ({ text }: { text: string }): Promise<{
+const fetchChat = async ({ text, debug = false }: { text: string, debug: Boolean }): Promise<{
     Data: ChatResponse
 }> => {
     const param = {
@@ -276,6 +336,7 @@ const fetchChat = async ({ text }: { text: string }): Promise<{
                 role: 'user',
                 content: text,
             }],
+            debug
         }) // body data type must match "Content-Type" header
     };
     const res = await fetch(API.chat, param);
@@ -366,6 +427,39 @@ const initApp = () => {
     app = new App('canvas');
     app.loadBg();
 }
+
+watch(() => uiState.singing, () => {
+    nextTick(() => {
+        if (siriWave) {
+            siriWave.dispose();
+            siriWave = undefined;
+        }
+        if (uiState.singing) {
+            siriWave = new SiriWave({
+                container: document.getElementById("siri-container")!,
+                // 显示比例
+                ratio: 1,
+                // 动画速度
+                speed: 0.2, 
+                // 振幅
+                amplitude: 1, 
+                // 频率(iOS风格)
+                frequency: 6, 
+                // 曲线颜色 (iOS风格)
+                color: "#fff", 
+                // 覆盖容器
+                cover: false,
+                // 自动开始
+                autostart: true, 
+                // 在画布上步骤数量
+                pixelDepth: 0.02, 
+                // 插入速度
+                lerpSpeed: 0.1,
+                style:'ios9'
+            });
+        }
+    });
+});
 
 onMounted(async () => {
     initApp();
@@ -496,6 +590,35 @@ onMounted(async () => {
     width: 100%;
     height: 100%;
 }
+#siri-container {
+    margin-top: 5px;
+    position: absolute;
+    height: 100%;
+    width: 90vw;
+}
+
+.siri-container-panel {
+    position: fixed;
+    height: 5vh;
+    z-index: 300;
+    bottom: 200px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    overflow: hidden;
+    transition-timing-function: cubic-bezier(.4,0,.2,1);
+    transition-duration: .5s;
+    transition-property: all;
+
+    .background {
+        background-color: black;
+        border-radius: 100px;
+        opacity: 0.5;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+}
 
 .loading-status {
     position: absolute;
@@ -507,5 +630,12 @@ onMounted(async () => {
 
 .error-tips {
     color: red;
+}
+
+.sing-svg {
+    position: fixed;
+    z-index: 300;
+    left: calc(50vw - 350px);
+    top: 100px;
 }
 </style>

@@ -22,6 +22,7 @@
     "compressorjs": "^1.1.1",
     "pixi-live2d-display": "git+https://github.com/windjackz/pixi-live2d-display.git#release/20230227_1",
     "pixi.js": "^6.1.0",
+    "siriwave": "^2.3.0",
     "vant": "^4.0.7"
   }
 }
