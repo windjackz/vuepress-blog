@@ -233,7 +233,7 @@ const watchPICModel = (model: PICKurisu) => {
 
 const handleCommands = (chatContent: ChatResponse) => {
     chatContent.commands.forEach((item) => {
-        switch (item.commands.action) {
+        switch (item.commands) {
             case 'backToHome':
                 setTimeout(() => {
                     window.location.href = '/';
@@ -244,8 +244,8 @@ const handleCommands = (chatContent: ChatResponse) => {
                     uiState.showDrawer = true;
                 }, 3000);
                 break;
-            case 'sign':
-                doSing(item.commands.data);
+            case 'sing':
+                doSing(item.data.name);
                 break;
 
         }
@@ -301,7 +301,7 @@ const onSend = async () => {
         limit();
         const res = await fetchChat({
             text: inputValue.value.trim(),
-            debug: true,
+            debug2: true,
         });
         // inputValue.value = '';
         chatContents.value.push(Object.assign({}, res.Data));
@@ -322,7 +322,7 @@ const onMaskClick = () => {
     uiState.chatContentHeight = 0;
 }
 
-const fetchChat = async ({ text, debug = false }: { text: string, debug: Boolean }): Promise<{
+const fetchChat = async ({ text, debug2 = false }: { text: string, debug2: Boolean }): Promise<{
     Data: ChatResponse
 }> => {
     const param = {
@@ -336,19 +336,20 @@ const fetchChat = async ({ text, debug = false }: { text: string, debug: Boolean
                 role: 'user',
                 content: text,
             }],
-            debug
+            debug2: debug2
         }) // body data type must match "Content-Type" header
     };
+    debugger;
     const res = await fetch(API.chat, param);
     if ((res as any).status !== 200) {
             throw new Error('服务器待机啦，请稍后再试');
     }
     const resObj = await res.json();
     if (resObj.Data?.emotions) {
-        resObj.Data.emotions = JSON.parse(resObj.Data.emotions);
+        resObj.Data.emotions = resObj.Data.emotions;
     }
     if (resObj.Data?.commands?.length) {
-        resObj.Data.commands = resObj.Data.commands.map((item => JSON.parse(item)));
+        resObj.Data.commands = resObj.Data.commands.map((item => item));
     }
     return resObj;
 }
