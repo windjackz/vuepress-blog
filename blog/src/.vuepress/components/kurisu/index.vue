@@ -381,7 +381,7 @@ const limit = () => {
     try {
         const bean = JSON.parse(beanRaw);
         if (bean) {
-            if (bean.count >= 10) {
+            if (bean.count >= 5) {
                 throw new Error('今日提问已到达限制次数');
             }
         }
