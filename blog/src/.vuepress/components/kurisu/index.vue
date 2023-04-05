@@ -6,7 +6,10 @@
         </div>
         <div v-if="uiState.chatContentHeight" class="chat-panel-mask" @click="onMaskClick"></div>
         <div class="chat-panel" v-if="!uiState.loadingProgress">
-            <van-icon v-if="chatContents.length" class="message" size="30px" name="chat" :badge="chatContents.length" @click="onRead" />
+            <div class="handle-btn-area">
+                <van-icon v-if="chatContents.length" class="message" size="30px" name="chat" :badge="chatContents.length" @click="onRead" />
+                <van-icon class="send-btn" :class="{ 'disabled': !!chatContents.length || uiState.sending }" name="share" size="30px" @click="onSend" />
+            </div>
             <div class="chat-content" :style="{ height: `${uiState.chatContentHeight}px` }">
                 <div class="p">
                     <VueWriter v-if="uiState.chatContentHeight" :typeSpeed="150" :iterations='1' :array="uiState.text" />
@@ -16,7 +19,6 @@
         <div v-if="!uiState.loadingProgress" class="chat-input" :class="{ 'sedding' : uiState.sending, 'disabled': !!chatContents.length }">
             <van-loading class="loading" v-if="uiState.sending" />
             <input :disabled="uiState.sending || !!chatContents.length" type="text" placeholder="..." v-model="inputValue" maxlength="30"/>
-            <van-icon class="send-btn" name="share" size="30px" @click="onSend" />
         </div>
     </div>
     <div  style="position: fixed; z-index: 0; top: 0; left: 0; right: 0; visibility: hidden;">
@@ -191,7 +193,7 @@ const initAudio = () => {
     chatContents.value.push({
         text: chat.text,
         audio: chat.audio,
-        commands: chat.commands || [],
+        commands:  [],
         emotions: {
             emotions: {
                 '喜悦': '1',
@@ -295,6 +297,10 @@ const onSend = async () => {
     if (!inputValue.value.trim()) {
         return;
     }
+
+    if (uiState.sending) {
+        return;
+    }
     
     uiState.sending = true;
     try {
@@ -339,7 +345,6 @@ const fetchChat = async ({ text, debug2 = false }: { text: string, debug2: Boole
             debug2: debug2
         }) // body data type must match "Content-Type" header
     };
-    debugger;
     const res = await fetch(API.chat, param);
     if ((res as any).status !== 200) {
             throw new Error('服务器待机啦，请稍后再试');
@@ -376,7 +381,7 @@ const limit = () => {
     try {
         const bean = JSON.parse(beanRaw);
         if (bean) {
-            if (bean.count >= 5) {
+            if (bean.count >= 10) {
                 throw new Error('今日提问已到达限制次数');
             }
         }
@@ -529,12 +534,34 @@ onMounted(async () => {
         }
     }
 
+    .handle-btn-area {
+        position: absolute;
+        top: -35px;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: row;
+        margin-left: 10px;
+        margin-right: 10px;
+
+        .send-btn {
+            width: 30px;
+            cursor: pointer;
+            color: white;
+            text-shadow: 2px 2px 3px black;
+            position: absolute;
+            right: 0px;
+        }
+
+        .send-btn.disabled {
+            color: darkgrey;
+            pointer-events: none;
+        }
+    }
+
     .message {
         color: white; 
         font-size: 30px;
-        position: absolute;
-        top: -35px;
-        left: 20px;
         cursor: pointer;
     }
 
@@ -558,12 +585,6 @@ onMounted(async () => {
             padding-left: 10px;
         }
 
-        .send-btn {
-            padding-right: 10px;
-            cursor: pointer;
-            color: #2c3e50;
-        }
-
         .loading {
             position: absolute;
             margin-left: 15px;
@@ -573,9 +594,6 @@ onMounted(async () => {
 
     .chat-input.sedding {
         input {
-            color: darkgrey;
-        }
-        .send-btn {
             color: darkgrey;
         }
     }
