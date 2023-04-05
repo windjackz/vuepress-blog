@@ -1,5 +1,5 @@
 ---
-title: Amadeus Kurisu 复刻计划！ V0.3.0 
+title: Amadeus Kurisu 复刻计划！ V0.6.0 
 icon: info
 description: 命运石之门 Steins;Gate Amadeus Kurisu 复刻计划！
 category:
@@ -25,6 +25,12 @@ const Kurisu = defineAsyncComponent(() => import('@Kurisu'))
 :::
 
 ## 修改日志
+
+### 0.6.0 (2023-04-05)
+
+### Features
+
+- **interact:** sing amadeus 
 
 ### 0.5.0 (2023-03-19)
 
