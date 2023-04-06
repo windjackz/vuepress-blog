@@ -90,6 +90,7 @@ import { Point } from 'pixi.js';
 import { ChatResponse } from './interfaces';
 import { initChat } from './datas';
 import SiriWave from "siriwave";
+import { getHours } from '../../framework/utils';
 
 const apiDomain = 'https://19hevguuz2.execute-api.ap-northeast-1.amazonaws.com/Prod';
 const API = {
@@ -129,7 +130,11 @@ const initPicModel = async () => {
     watchPICModel(model);
     const root = await model.load();
     app?.container.addChild(root);
-    model.play('sided_pleasant', false);
+    if (!isMidnight()) {
+        model.play('sided_pleasant', false);
+    } else {
+        model.play('sided_eyes_closed', false);
+    }
     root.x = 0;
     root.y = 600;
     root.scale = new Point(1.06, 1.06);
@@ -189,20 +194,22 @@ const initAudio = () => {
             uiState.singing = false;
         }
     });
-    const chat = initChat[Math.floor(Math.random() * initChat.length)];
-    chatContents.value.push({
-        text: chat.text,
-        audio: chat.audio,
-        commands:  [],
-        emotions: {
+    if (!isMidnight()) {
+        const chat = initChat[Math.floor(Math.random() * initChat.length)];
+        chatContents.value.push({
+            text: chat.text,
+            audio: chat.audio,
+            commands:  [],
             emotions: {
-                '喜悦': '1',
-                '傲娇': '0',
-                '悲伤': '0',
-                '愤怒': '0', 
+                emotions: {
+                    '喜悦': '1',
+                    '傲娇': '0',
+                    '悲伤': '0',
+                    '愤怒': '0', 
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 const watchModel = (model: ModelEntity) => {
@@ -378,6 +385,9 @@ const onTalkingAudioEnd = () => {
 const limit = () => {
     const key = formatDate(new Date().getTime(), 'yyyyMMdd');
     const beanRaw = localStorage.getItem(`kurisu${key}`) || '{}';
+    if (isMidnight()) {
+        throw new Error('助手已经休息了，你也早点休息');
+    }
     try {
         const bean = JSON.parse(beanRaw);
         if (bean) {
@@ -432,6 +442,14 @@ const formatDate = (timestamp, format) => {
 const initApp = () => {
     app = new App('canvas');
     app.loadBg();
+}
+
+const isMidnight = () => {
+    const hour = getHours();
+    if (hour >= 0 && hour <= 6) {
+        return true;
+    }
+    return false;
 }
 
 watch(() => uiState.singing, () => {
