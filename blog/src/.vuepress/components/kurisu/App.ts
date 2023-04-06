@@ -1,8 +1,17 @@
 import { Application, Ticker, Container, Point, Sprite } from 'pixi.js';
 import { Live2DModel } from '../../framework/live2d/Live2DModel';
+import { getHours } from '../../framework/utils';
 
 Live2DModel.registerTicker(Ticker);
 const designSize = { w: 1920, h: 1080 };
+
+const isMidnight = () => {
+    const hour = getHours();
+    if (hour >= 0 && hour <= 6) {
+        return true;
+    }
+    return false;
+}
 
 export default class App {
 
@@ -50,7 +59,7 @@ export default class App {
     }
 
     loadBg() {
-        this.bg = Sprite.from('/assets/images/kurisu/BG01A.png');
+        this.bg = Sprite.from(!isMidnight() ? '/assets/images/kurisu/BG01A.png' : '/assets/images/kurisu/BG01N5.png');
         this.bg.position.x = -designSize.w / 2;
         this.bg.position.y = -designSize.h / 2;
         this.container.addChild(this.bg);
