@@ -7,7 +7,8 @@
         <div v-if="uiState.chatContentHeight" class="chat-panel-mask" @click="onMaskClick"></div>
         <div class="chat-panel" v-if="!uiState.loadingProgress">
             <div class="handle-btn-area">
-                <van-icon v-if="chatContents.length" class="message" size="30px" name="chat" :badge="chatContents.length" @click="onRead" />
+                <van-icon v-if="chatContents.length" class="message item" size="30px" name="chat" :badge="chatContents.length" @click="onRead" />
+                <van-icon name="music" class="music item"  size="30px" @click="uiState.songsPicker = true" />
                 <van-icon class="send-btn" :class="{ 'disabled': !!chatContents.length || uiState.sending }" name="share" size="30px" @click="onSend" />
             </div>
             <div class="chat-content" :style="{ height: `${uiState.chatContentHeight}px` }">
@@ -69,6 +70,14 @@
         <div class="background"></div>
         <div id="siri-container"></div>
     </div>
+    <!--音乐选择-->
+    <van-popup v-model:show="uiState.songsPicker" round position="bottom">
+        <van-picker
+            :columns="sings"
+            @cancel="uiState.songsPicker = false"
+            @confirm="onSingPickerConfirm"
+        />
+    </van-popup>
     <Live2dDebuggerEditor v-model:show-drawer="uiState.showDrawer" :model="model" />
     <Live2dSettingButton @click="uiState.showDrawer = !uiState.showDrawer" />
 
@@ -88,7 +97,7 @@ import { MotionPriority } from 'pixi-live2d-display';
 import { showNotify } from 'vant';
 import { Point } from 'pixi.js';
 import { ChatResponse } from './interfaces';
-import { initChat } from './datas';
+import { initChat, singsDatas } from './datas';
 import SiriWave from "siriwave";
 import { getHours } from '../../framework/utils';
 
@@ -105,8 +114,11 @@ const uiState = reactive({
     sending: false,
     singing: false,
     chatContentHeight: 0,
-    text: ['...']
+    text: ['...'],
+    songsPicker: false,
 });
+
+const sings = singsDatas;
 
 const inputValue = ref('助手！');
 const audioData = ref('');
@@ -264,6 +276,10 @@ const handleCommands = (chatContent: ChatResponse) => {
 const doSing = (songName: string) => {
     if (songName.indexOf('アマデウス') >= 0 || songName.indexOf('Amadeus') >= 0 ) {
         audioData.value = 'https://moremoreda-1257923696.file.myqcloud.com/kurisu/song/kurisu_amadeus.mp3';
+        audioRef.value!.preload = 'metadata';
+    }
+    if (songName.indexOf('zhongwuyan') >= 0 || songName.indexOf('钟无艳') >= 0 ) {
+        audioData.value = 'https://moremoreda-1257923696.file.myqcloud.com/kurisu/song/zhongwuyan_cut.mp3';
         audioRef.value!.preload = 'metadata';
     }
 }
@@ -442,6 +458,11 @@ const formatDate = (timestamp, format) => {
   return format.replace(/yyyy|MM|dd|HH|mm|ss/g, (matched) => formatObj[matched]);
 }
 
+const onSingPickerConfirm = ({ selectedOptions }) => {
+    uiState.songsPicker = false;
+    doSing(selectedOptions[0].text);
+}
+
 const initApp = () => {
     app = new App('canvas');
     app.loadBg();
@@ -487,6 +508,7 @@ watch(() => uiState.singing, () => {
         }
     });
 });
+
 
 onMounted(async () => {
     initApp();
@@ -578,12 +600,26 @@ onMounted(async () => {
             color: darkgrey;
             pointer-events: none;
         }
-    }
 
-    .message {
-        color: white; 
-        font-size: 30px;
-        cursor: pointer;
+        .music {
+            width: 30px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .music.disabled {
+            color: darkgrey;
+            pointer-events: none;
+        }
+        .message {
+            color: white; 
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .item + .item {
+            margin-left: 16px;
+        }
     }
 
     .chat-input {
@@ -678,4 +714,5 @@ onMounted(async () => {
     left: calc(50vw - 350px);
     top: 100px;
 }
+
 </style>

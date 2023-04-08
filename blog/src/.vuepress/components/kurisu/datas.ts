@@ -25,3 +25,8 @@ export const initChat = [
         }]
     } */
 ];
+
+export const singsDatas = [
+    { text: 'アマデウス', value: 'アマデウス' },
+    { text: '钟无艳', value: '钟无艳' }
+];
