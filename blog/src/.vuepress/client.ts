@@ -1,6 +1,6 @@
 import { defineClientConfig } from '@vuepress/client'
 import { Uploader, Field, Form, Button, Switch, Popup, Icon } from 'vant';
-import { Collapse, CollapseItem, Slider, Loading } from 'vant';
+import { Collapse, CollapseItem, Slider, Loading, Picker } from 'vant';
 
 export default defineClientConfig({
     enhance({ app, router, siteData }) {
@@ -14,7 +14,8 @@ export default defineClientConfig({
         .use(CollapseItem)
         .use(Slider)
         .use(Loading)
-        .use(Switch);
+        .use(Switch)
+        .use(Picker);
     },
     setup() {
     },
