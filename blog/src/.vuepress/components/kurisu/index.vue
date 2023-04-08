@@ -108,7 +108,7 @@ const uiState = reactive({
     text: ['...']
 });
 
-const inputValue = ref('今日はいい天気ですね。');
+const inputValue = ref('助手！');
 const audioData = ref('');
 const model: Ref<ModelEntity | undefined> = ref();
 const picModel: Ref<PICKurisu | undefined> = ref();
@@ -354,7 +354,10 @@ const fetchChat = async ({ text, debug2 = false }: { text: string, debug2: Boole
     };
     const res = await fetch(API.chat, param);
     if ((res as any).status !== 200) {
-            throw new Error('服务器待机啦，请稍后再试');
+        const resObj = await res.json();
+        console.log(resObj.Error || resObj.message);
+        debugger;
+        throw new Error(resObj.Error || resObj.message || '服务器待机啦，请稍后再试');
     }
     const resObj = await res.json();
     if (resObj.Data?.emotions) {
