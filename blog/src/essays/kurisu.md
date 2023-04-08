@@ -1,5 +1,5 @@
 ---
-title: Amadeus Kurisu 复刻计划！ V0.6.1
+title: Amadeus Kurisu 复刻计划！ V0.6.2
 icon: info
 description: 命运石之门 Steins;Gate Amadeus Kurisu 复刻计划！
 category:
