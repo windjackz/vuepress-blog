@@ -30,3 +30,8 @@ export const singsDatas = [
     { text: 'アマデウス', value: 'アマデウス' },
     { text: '钟无艳', value: '钟无艳' }
 ];
+
+export const ttsLangsDatas = [
+    { text: '日文', value: 'jp' },
+    /* { text: '中文', value: 'cn' } */
+];

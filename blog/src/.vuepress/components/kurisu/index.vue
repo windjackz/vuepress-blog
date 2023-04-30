@@ -9,11 +9,12 @@
             <div class="handle-btn-area">
                 <van-icon v-if="chatContents.length" class="message item" size="30px" name="chat" :badge="chatContents.length" @click="onRead" />
                 <van-icon name="music" class="music item"  size="30px" @click="uiState.songsPicker = true" />
+                <van-icon name="audio" class="audio item" size="30px" @click="uiState.audioSettingDialog = true" />
                 <van-icon class="send-btn" :class="{ 'disabled': !!chatContents.length || uiState.sending }" name="share" size="30px" @click="onSend" />
             </div>
             <div class="chat-content" :style="{ height: `${uiState.chatContentHeight}px` }">
                 <div class="p">
-                    <VueWriter v-if="uiState.chatContentHeight" :typeSpeed="150" :iterations='1' :array="uiState.text" />
+                    <VueWriter v-if="uiState.chatContentHeight" :typeSpeed="150" :iterations='1' :array="uiState.text" @typed="onTyped" />
                 </div>
             </div>
         </div>
@@ -78,6 +79,26 @@
             @confirm="onSingPickerConfirm"
         />
     </van-popup>
+    <!--声音设置-->
+    <van-popup
+    v-model:show="uiState.audioSettingDialog"
+        position="bottom"
+        closeable
+    >
+        <div>
+            <van-cell center title="语音" title-style="text-align: left" style="margin-top: 50px;">
+                <template #right-icon>
+                    <van-switch v-model="uiState.enableTTS" />
+                </template>
+            </van-cell>
+            <div>
+                <van-picker
+                :columns="ttsLangs"
+                :show-toolbar="false"
+                />
+            </div>
+        </div>
+    </van-popup>
     <Live2dDebuggerEditor v-model:show-drawer="uiState.showDrawer" :model="model" />
     <Live2dSettingButton @click="uiState.showDrawer = !uiState.showDrawer" />
 
@@ -97,7 +118,7 @@ import { MotionPriority } from 'pixi-live2d-display';
 import { showNotify } from 'vant';
 import { Point } from 'pixi.js';
 import { ChatResponse } from './interfaces';
-import { initChat, singsDatas } from './datas';
+import { initChat, singsDatas, ttsLangsDatas } from './datas';
 import SiriWave from "siriwave";
 import { getHours } from '../../framework/utils';
 
@@ -116,9 +137,12 @@ const uiState = reactive({
     chatContentHeight: 0,
     text: ['...'],
     songsPicker: false,
+    audioSettingDialog: false,
+    enableTTS: true,
 });
 
 const sings = singsDatas;
+const ttsLangs = ttsLangsDatas;
 
 const inputValue = ref('助手！');
 const audioData = ref('');
@@ -126,6 +150,7 @@ const model: Ref<ModelEntity | undefined> = ref();
 const picModel: Ref<PICKurisu | undefined> = ref();
     
 const chatContents: Ref<ChatResponse[]> = ref([]);
+let curChatContent: ChatResponse;
 
 const audioRef = ref<HTMLAudioElement>();
 
@@ -290,6 +315,7 @@ const onRead = () => {
         uiState.chatContentHeight = chatContent?.text ? 100 : 0;
         audioData.value = '';
         if (chatContent) {
+            curChatContent = chatContent;
             if (model.value) {
                 // 解析情绪
                 let motionIndex = parseLive2dEmotion(chatContent);
@@ -302,19 +328,26 @@ const onRead = () => {
                  // 播放动画
                  picModel.value.play(emotionKey);
                 // 播放语音
-                audioData.value = chatContent.audio || '';
+                audioData.value = uiState.enableTTS? (chatContent.audio || '') : '';
                 audioRef.value!.preload = 'metadata';
-                audioRef.value?.addEventListener("ended", () => {
-                    // 处理动作
-                    handleCommands(chatContent);
-                }, {
-                    once: true,
-                });
+                if (audioData.value) {
+                    audioRef.value?.addEventListener("ended", () => {
+                        // 处理动作
+                        handleCommands(chatContent);
+                    }, {
+                        once: true,
+                    })
+                };
             }
             uiState.text = [chatContent.text];
         }
     }
 } 
+
+const onTyped = () => {
+    !curChatContent.audio
+    handleCommands(curChatContent);
+}
 
 const onSend = async () => {
     if (!inputValue.value.trim()) {
@@ -330,7 +363,7 @@ const onSend = async () => {
         limit();
         const res = await fetchChat({
             text: inputValue.value.trim(),
-            debug2: true,
+            disableTTS: !uiState.enableTTS,
         });
         // inputValue.value = '';
         chatContents.value.push(Object.assign({}, res.Data));
@@ -351,7 +384,7 @@ const onMaskClick = () => {
     uiState.chatContentHeight = 0;
 }
 
-const fetchChat = async ({ text, debug2 = false }: { text: string, debug2: Boolean }): Promise<{
+const fetchChat = async ({ text, disableTTS = false }: { text: string, debug2?: Boolean, disableTTS?: Boolean }): Promise<{
     Data: ChatResponse
 }> => {
     const param = {
@@ -365,15 +398,13 @@ const fetchChat = async ({ text, debug2 = false }: { text: string, debug2: Boole
                 role: 'user',
                 content: text,
             }],
-            debug2: debug2
+            disableTTS
         }) // body data type must match "Content-Type" header
     };
     const res = await fetch(API.chat, param);
     if ((res as any).status !== 200) {
         const resObj = await res.json();
-        console.log(resObj.Error || resObj.message);
-        debugger;
-        throw new Error(resObj.Error || resObj.message || '服务器待机啦，请稍后再试');
+        throw new Error(resObj.Error || resObj.message || '今天Lab的电费用完啦！明日记得早点来哦！');
     }
     const resObj = await res.json();
     if (resObj.Data?.emotions) {
@@ -611,6 +642,19 @@ onMounted(async () => {
             color: darkgrey;
             pointer-events: none;
         }
+
+        .audio {
+            color: white; 
+            font-size: 30px;
+            cursor: pointer;
+            text-shadow: 2px 2px 3px black;
+        }
+
+        .audio.disabled {
+            color: darkgrey;
+            pointer-events: none;
+        }
+
         .message {
             color: white; 
             font-size: 30px;
